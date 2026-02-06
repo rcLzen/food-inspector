@@ -43,8 +43,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet_tfm:
+          - net8.0-android
     env:
-      DOTNET_TFM: net8.0-android
+      DOTNET_TFM: ${{ matrix.dotnet_tfm }}
       MAUI_PROJECT: FoodInspector.csproj
     steps:
       - name: Checkout
@@ -61,7 +65,7 @@ jobs:
         run: dotnet build $MAUI_PROJECT -c Release -f $DOTNET_TFM --no-restore
       - name: Test
         run: |
-          mapfile -t TEST_PROJECTS < <(find . \( -name "*Tests.csproj" -o -name "*Test.csproj" \) -not -path "./tools/*" -not -path "./src/food_inspector/*" -not -path "./tests/*")
+          mapfile -t TEST_PROJECTS < <(find . \( -name "*Tests.csproj" -o -name "*Test.csproj" \))
           if [ ${#TEST_PROJECTS[@]} -eq 0 ]; then
             echo "No test projects found."
             exit 0
