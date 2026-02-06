@@ -121,9 +121,23 @@
         loadingMessage = "Analyzing ingredients...";
         StateHasChanged();
 
-        currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode, flareModeThreshold);
-
-        isLoading = false;
+        try
+        {
+            currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode);
+        }
+        catch (Exception ex)
+        {
+            currentResult = new AnalysisResult
+            {
+                SafetyLevel = SafetyLevel.Safe,
+                Summary = $"Error analyzing ingredients: {ex.Message}"
+            };
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 
     private async Task SaveToHistory()
@@ -133,6 +147,9 @@
             return;
         }
 
+        // Create ScanRecord with related ScanMatch entities.
+        // EF Core will automatically populate ScanMatch.ScanRecordId when the parent ScanRecord is saved
+        // due to the cascade relationship configuration in the DbContext.
         var record = new ScanRecord
         {
             CreatedUtc = DateTime.UtcNow,

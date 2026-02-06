@@ -34,7 +34,8 @@
                            @bind="flareModeThreshold" 
                            @oninput="UpdateThreshold">
                     <small class="form-text text-muted">
-                        Triggers with severity score >= @flareModeThreshold will be flagged.
+                        Note: Flare Mode currently escalates all Moderate severity triggers to AVOID status. 
+                        This threshold setting is reserved for future fine-grained control.
                         (1 = most lenient, 10 = most strict)
                     </small>
                 </div>

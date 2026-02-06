@@ -2,6 +2,10 @@ using FoodInspector.Models;
 
 namespace FoodInspector.Services;
 
+/// <summary>
+/// Test-only interface definition. The production code has the same interface in DatabaseService.cs.
+/// This minimal definition avoids bringing in EF Core and other dependencies that are not needed for unit tests.
+/// </summary>
 public interface IDatabaseService
 {
     Task InitializeDatabaseAsync();
