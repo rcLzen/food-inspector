@@ -60,7 +60,7 @@ jobs:
         run: dotnet build FoodInspector.csproj -c Release -f $DOTNET_TFM --no-restore
       - name: Test
         run: |
-          mapfile -t TEST_PROJECTS < <(find . -name "*Tests.csproj" -o -name "*Test.csproj")
+          mapfile -t TEST_PROJECTS < <(find . \( -path ./tools -o -path ./src -o -path ./tests \) -prune -o \( -name "*Tests.csproj" -o -name "*Test.csproj" \) -print)
           if [ ${#TEST_PROJECTS[@]} -eq 0 ]; then
             echo "No test projects found."
             exit 0
