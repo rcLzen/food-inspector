@@ -1,0 +1,153 @@
+@page "/history"
+@using FoodInspector.Services
+@using FoodInspector.Models
+@inject IDatabaseService DatabaseService
+@inject IExportService ExportService
+
+<PageTitle>History - Food Inspector</PageTitle>
+
+<div class="page-container">
+    <h1>Scan History</h1>
+
+    <div class="mb-3">
+        <button class="btn btn-primary me-2" @onclick="ExportCsv">Export CSV</button>
+        <button class="btn btn-secondary" @onclick="ExportJson">Export JSON</button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (!history.Any())
+    {
+        <p>No scan history yet. Start scanning to see results here!</p>
+    }
+    else
+    {
+        @foreach (var scan in history)
+        {
+            <div class="history-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h5>
+                            @(scan.ProductName ?? "Manual Scan")
+                            @if (scan.IsFlareMode)
+                            {
+                                <span class="flare-mode-badge">🔥 Flare Mode</span>
+                            }
+                        </h5>
+                        <small class="text-muted">@scan.ScanDate.ToString("g")</small>
+                        
+                        @if (!string.IsNullOrEmpty(scan.Barcode))
+                        {
+                            <p><strong>Barcode:</strong> @scan.Barcode</p>
+                        }
+                        
+                        <div class="@GetSafetyBadgeClass(scan.SafetyLevel)">
+                            @GetSafetyLevelText(scan.SafetyLevel)
+                        </div>
+                        
+                        <p class="mt-2"><strong>Ingredients:</strong></p>
+                        <p class="small">@(scan.Ingredients.Length > 200 ? scan.Ingredients.Substring(0, 200) + "..." : scan.Ingredients)</p>
+                    </div>
+                    
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteScan(scan.Id)">Delete</button>
+                </div>
+            </div>
+        }
+    }
+
+    @if (!string.IsNullOrEmpty(exportMessage))
+    {
+        <div class="alert alert-success mt-3">
+            @exportMessage
+        </div>
+    }
+</div>
+
+@code {
+    private List<FoodScanHistory> history = new();
+    private bool isLoading = true;
+    private string exportMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHistory();
+    }
+
+    private async Task LoadHistory()
+    {
+        isLoading = true;
+        history = await DatabaseService.GetScanHistoryAsync();
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task DeleteScan(int id)
+    {
+        await DatabaseService.DeleteScanHistoryAsync(id);
+        await LoadHistory();
+    }
+
+    private async Task ExportCsv()
+    {
+        try
+        {
+            var filePath = await ExportService.ExportToCsvAsync(history);
+            exportMessage = $"Exported to CSV: {filePath}";
+            StateHasChanged();
+            await Task.Delay(3000);
+            exportMessage = "";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            exportMessage = $"Export failed: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task ExportJson()
+    {
+        try
+        {
+            var filePath = await ExportService.ExportToJsonAsync(history);
+            exportMessage = $"Exported to JSON: {filePath}";
+            StateHasChanged();
+            await Task.Delay(3000);
+            exportMessage = "";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            exportMessage = $"Export failed: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    private string GetSafetyBadgeClass(SafetyLevel level)
+    {
+        return level switch
+        {
+            SafetyLevel.Safe => "badge bg-success",
+            SafetyLevel.Caution => "badge bg-warning",
+            SafetyLevel.Avoid => "badge bg-danger",
+            _ => "badge bg-secondary"
+        };
+    }
+
+    private string GetSafetyLevelText(SafetyLevel level)
+    {
+        return level switch
+        {
+            SafetyLevel.Safe => "✅ SAFE",
+            SafetyLevel.Caution => "⚠️ CAUTION",
+            SafetyLevel.Avoid => "🚫 AVOID",
+            _ => "UNKNOWN"
+        };
+    }
+}

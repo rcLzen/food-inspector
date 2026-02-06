@@ -1,0 +1,288 @@
+@page "/"
+@using FoodInspector.Services
+@using FoodInspector.Models
+@inject IBarcodeScannerService BarcodeScanner
+@inject IOcrService OcrService
+@inject IOpenFoodFactsService OpenFoodFacts
+@inject IIngredientAnalysisService AnalysisService
+@inject IDatabaseService DatabaseService
+@inject ISettingsService SettingsService
+@inject NavigationManager Navigation
+
+<PageTitle>Scan - Food Inspector</PageTitle>
+
+<div class="page-container">
+    <h1>Food Safety Scanner</h1>
+
+    @if (isFlareMode)
+    {
+        <div class="alert alert-danger">
+            <strong>🔥 Flare Mode Active</strong> - Heightened sensitivity (threshold: @flareModeThreshold)
+        </div>
+    }
+
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>@loadingMessage</p>
+        </div>
+    }
+    else if (currentResult != null)
+    {
+        <div class="@GetSafetyCardClass(currentResult.SafetyLevel)">
+            <h2>@GetSafetyLevelText(currentResult.SafetyLevel)</h2>
+            <p><strong>@currentResult.Summary</strong></p>
+            
+            @if (currentResult.DetectedTriggers.Any())
+            {
+                <h4>Detected Triggers:</h4>
+                <ul>
+                    @foreach (var trigger in currentResult.DetectedTriggers)
+                    {
+                        <li>@trigger</li>
+                    }
+                </ul>
+            }
+            
+            @if (currentResult.Warnings.Any())
+            {
+                <h4>Details:</h4>
+                <ul>
+                    @foreach (var warning in currentResult.Warnings)
+                    {
+                        <li>@warning</li>
+                    }
+                </ul>
+            }
+            
+            <button class="btn btn-primary mt-3" @onclick="SaveToHistory">Save to History</button>
+            <button class="btn btn-secondary mt-3" @onclick="Reset">New Scan</button>
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <label for="ingredientsInput" class="form-label">Enter Ingredients:</label>
+            <textarea class="form-control" id="ingredientsInput" rows="5" 
+                      @bind="ingredientsText" 
+                      placeholder="Enter ingredients manually or use scanning options below..."></textarea>
+        </div>
+
+        <button class="btn btn-primary scan-button" @onclick="ScanBarcode">
+            📷 Scan Barcode
+        </button>
+        
+        <button class="btn btn-info scan-button" @onclick="ScanIngredients">
+            📸 Scan Ingredients (OCR)
+        </button>
+        
+        <button class="btn btn-success scan-button" @onclick="AnalyzeManual">
+            🔍 Analyze Ingredients
+        </button>
+    }
+</div>
+
+@code {
+    private string ingredientsText = "";
+    private string? currentBarcode;
+    private string? currentProductName;
+    private AnalysisResult? currentResult;
+    private bool isLoading = false;
+    private string loadingMessage = "";
+    private bool isFlareMode = false;
+    private int flareModeThreshold = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize database
+        await DatabaseService.InitializeDatabaseAsync();
+        
+        // Load settings
+        isFlareMode = await SettingsService.GetFlareModeAsync();
+        flareModeThreshold = await SettingsService.GetFlareModeThresholdAsync();
+    }
+
+    private async Task ScanBarcode()
+    {
+        try
+        {
+            isLoading = true;
+            loadingMessage = "Opening camera for barcode scan...";
+            StateHasChanged();
+
+            // Note: In a real implementation, this would open the camera
+            // For demo purposes, allow manual input
+            await Task.Delay(500);
+            
+            // Simulate barcode scan or manual entry
+            currentBarcode = "0000000000000"; // Placeholder
+            
+            // Try to get product info from Open Food Facts
+            loadingMessage = "Fetching product information...";
+            StateHasChanged();
+            
+            var product = await OpenFoodFacts.GetProductByBarcodeAsync(currentBarcode);
+            if (product != null)
+            {
+                currentProductName = product.ProductName;
+                ingredientsText = product.Ingredients ?? "";
+            }
+            
+            if (!string.IsNullOrWhiteSpace(ingredientsText))
+            {
+                await AnalyzeIngredients();
+            }
+            else
+            {
+                loadingMessage = "No product found. Please enter ingredients manually.";
+                await Task.Delay(2000);
+            }
+        }
+        catch (Exception ex)
+        {
+            loadingMessage = $"Error: {ex.Message}";
+            await Task.Delay(2000);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ScanIngredients()
+    {
+        try
+        {
+            isLoading = true;
+            loadingMessage = "Opening camera for ingredient photo...";
+            StateHasChanged();
+
+            await Task.Delay(500);
+            
+            // Note: In a real implementation, this would:
+            // 1. Open camera to take photo
+            // 2. Save photo
+            // 3. Run OCR on photo
+            // For demo purposes, we'll simulate
+            
+            loadingMessage = "Processing image with OCR...";
+            StateHasChanged();
+            await Task.Delay(1000);
+            
+            // Simulated OCR result
+            var ocrResult = ""; // await OcrService.ExtractTextFromImageAsync(imagePath);
+            
+            if (!string.IsNullOrWhiteSpace(ocrResult))
+            {
+                ingredientsText = ocrResult;
+                await AnalyzeIngredients();
+            }
+            else
+            {
+                loadingMessage = "No text detected. Please try again or enter manually.";
+                await Task.Delay(2000);
+            }
+        }
+        catch (Exception ex)
+        {
+            loadingMessage = $"Error: {ex.Message}";
+            await Task.Delay(2000);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AnalyzeManual()
+    {
+        if (string.IsNullOrWhiteSpace(ingredientsText))
+        {
+            return;
+        }
+
+        await AnalyzeIngredients();
+    }
+
+    private async Task AnalyzeIngredients()
+    {
+        try
+        {
+            isLoading = true;
+            loadingMessage = "Analyzing ingredients...";
+            StateHasChanged();
+
+            currentResult = await AnalysisService.AnalyzeIngredientsAsync(
+                ingredientsText, 
+                isFlareMode, 
+                flareModeThreshold);
+        }
+        catch (Exception ex)
+        {
+            loadingMessage = $"Error: {ex.Message}";
+            await Task.Delay(2000);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveToHistory()
+    {
+        if (currentResult == null) return;
+
+        var scan = new FoodScanHistory
+        {
+            ScanDate = DateTime.Now,
+            Barcode = currentBarcode,
+            ProductName = currentProductName,
+            Ingredients = ingredientsText,
+            SafetyLevel = currentResult.SafetyLevel,
+            Analysis = System.Text.Json.JsonSerializer.Serialize(currentResult),
+            IsFlareMode = isFlareMode
+        };
+
+        await DatabaseService.SaveScanHistoryAsync(scan);
+        
+        // Navigate to history
+        Navigation.NavigateTo("/history");
+    }
+
+    private void Reset()
+    {
+        ingredientsText = "";
+        currentBarcode = null;
+        currentProductName = null;
+        currentResult = null;
+        StateHasChanged();
+    }
+
+    private string GetSafetyCardClass(SafetyLevel level)
+    {
+        return level switch
+        {
+            SafetyLevel.Safe => "safety-card safety-safe",
+            SafetyLevel.Caution => "safety-card safety-caution",
+            SafetyLevel.Avoid => "safety-card safety-avoid",
+            _ => "safety-card"
+        };
+    }
+
+    private string GetSafetyLevelText(SafetyLevel level)
+    {
+        return level switch
+        {
+            SafetyLevel.Safe => "✅ SAFE",
+            SafetyLevel.Caution => "⚠️ CAUTION",
+            SafetyLevel.Avoid => "🚫 AVOID",
+            _ => "UNKNOWN"
+        };
+    }
+}

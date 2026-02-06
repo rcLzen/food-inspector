@@ -1,0 +1,35 @@
+## Build artifacts
+bin/
+obj/
+_bin/
+_obj/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio cache/options
+.vs/
+.vscode/
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+
+## Database files
+*.db
+*.db-shm
+*.db-wal
+
+## MAUI specific
+.DS_Store
+*.apk
+*.aab
+*.ipa
+
+## Cache and temp
+.cache/
+*.log
