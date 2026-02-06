@@ -1,5 +1,9 @@
 # Ingredient Synonym Dictionary
 # Maps allergen categories to their various forms and synonyms
+#
+# This file is used by:
+# - Python package (food_inspector.matcher)
+# - .NET MAUI app (can be used as reference for database seeding)
 
 dairy:
   - milk

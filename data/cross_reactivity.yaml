@@ -1,6 +1,10 @@
 # Cross-Reactivity Rules
 # Maps source allergen to potential cross-reactive targets
 # Format: source -> [targets with confidence and notes]
+#
+# This file is used by:
+# - Python package (food_inspector.cross_reactivity)
+# - .NET MAUI app (can be used as reference for database seeding)
 
 cross_reactivity_rules:
   - source: dairy

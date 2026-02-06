@@ -1,5 +1,32 @@
 # Food Inspector
 
+A comprehensive food safety toolkit with implementations for multiple platforms.
+
+## Repository Contents
+
+This repository contains **two complementary implementations** of the Food Inspector system:
+
+### 1. 📱 .NET MAUI Mobile App (main branch)
+A complete cross-platform mobile application for iOS, Android, Windows, and macOS with:
+- Barcode scanning and OCR for ingredient labels
+- Offline-first architecture with encrypted SQLite database
+- Online enrichment via Open Food Facts API
+- Flare Mode for heightened sensitivity periods
+- Scan history and export functionality
+
+**[See the .NET MAUI app documentation →](https://github.com/rcLzen/food-inspector/tree/main)**
+
+### 2. 🐍 Python Package (this branch)
+A Python library for programmatic ingredient analysis with:
+- Curated ingredient synonym dictionary (150+ synonyms across 9 allergen categories)
+- Structured cross-reactivity rules with confidence levels
+- Word-boundary-safe pattern matching to prevent false positives
+- Comprehensive test suite and API
+
+---
+
+## Python Package Documentation
+
 A Python package for analyzing food ingredients with advanced allergen detection, synonym matching, and cross-reactivity checking.
 
 ## Features
@@ -239,6 +266,34 @@ cross_reactivity_rules:
     target: banana
     confidence: medium
     notes: "Latex-fruit syndrome; shared proteins cause cross-reactivity"
+```
+
+## Integration with .NET MAUI App
+
+The Python package and .NET MAUI mobile app can work together:
+
+### Shared Data Format
+Both implementations use similar data structures for allergen synonyms and cross-reactivity rules. The Python YAML files (`data/ingredient_synonyms.yaml` and `data/cross_reactivity.yaml`) can serve as:
+- **Data source** for the .NET app's database seeding
+- **Reference implementation** for validation logic
+- **Shared documentation** of allergen relationships
+
+### Potential Integration Patterns
+1. **Backend API**: Deploy Python package as a REST API that the mobile app can call
+2. **Data synchronization**: Use Python package to generate/update the .NET app's SQLite database
+3. **Testing**: Use Python tests to validate .NET implementation behavior
+4. **Analytics**: Process .NET app export data (CSV/JSON) using Python package
+
+### Example: Converting Python Data to .NET
+```python
+# Generate C# seed data from Python YAML files
+from food_inspector import IngredientMatcher
+matcher = IngredientMatcher()
+
+for category, synonyms in matcher.synonyms.items():
+    print(f"// {category}")
+    for synonym in synonyms:
+        print(f'new IngredientSynonym {{ Synonym = "{synonym}" }}')
 ```
 
 ## API Reference
