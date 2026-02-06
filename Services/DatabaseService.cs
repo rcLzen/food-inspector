@@ -35,8 +35,9 @@ public class DatabaseService : IDatabaseService
             // Get encryption key
             var key = await _secureStorage.GetEncryptionKeyAsync();
             
-            // Apply migrations
-            await _context.Database.MigrateAsync();
+            // Ensure database is created with schema
+            // Use EnsureCreated instead of Migrate for MAUI apps
+            await _context.Database.EnsureCreatedAsync();
         }
         catch (Exception ex)
         {
