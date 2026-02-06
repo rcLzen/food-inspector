@@ -45,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_TFM: net8.0-android
+      MAUI_PROJECT: FoodInspector.csproj
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,12 +56,12 @@ jobs:
       - name: Restore workloads
         run: dotnet workload restore
       - name: Restore
-        run: dotnet restore FoodInspector.csproj -f $DOTNET_TFM
+        run: dotnet restore $MAUI_PROJECT -f $DOTNET_TFM
       - name: Build
-        run: dotnet build FoodInspector.csproj -c Release -f $DOTNET_TFM --no-restore
+        run: dotnet build $MAUI_PROJECT -c Release -f $DOTNET_TFM --no-restore
       - name: Test
         run: |
-          mapfile -t TEST_PROJECTS < <(find . \( -name "*Tests.csproj" -o -name "*Test.csproj" \) -not -path "./tools/*" -not -path "./src/*" -not -path "./tests/*")
+          mapfile -t TEST_PROJECTS < <(find . \( -name "*Tests.csproj" -o -name "*Test.csproj" \) -not -path "./tools/*" -not -path "./src/food_inspector/*" -not -path "./tests/*")
           if [ ${#TEST_PROJECTS[@]} -eq 0 ]; then
             echo "No test projects found."
             exit 0
