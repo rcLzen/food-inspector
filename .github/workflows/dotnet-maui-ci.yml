@@ -43,6 +43,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOTNET_TFM: net8.0-android
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,9 +55,9 @@ jobs:
       - name: Restore workloads
         run: dotnet workload restore
       - name: Restore
-        run: dotnet restore FoodInspector.csproj -f net8.0-android
+        run: dotnet restore FoodInspector.csproj -f $DOTNET_TFM
       - name: Build
-        run: dotnet build FoodInspector.csproj -c Release -f net8.0-android --no-restore
+        run: dotnet build FoodInspector.csproj -c Release -f $DOTNET_TFM --no-restore
       - name: Test
         run: |
           mapfile -t TEST_PROJECTS < <(find . -name "*Tests.csproj" -o -name "*Test.csproj")
@@ -64,5 +66,5 @@ jobs:
             exit 0
           fi
           for project in "${TEST_PROJECTS[@]}"; do
-            dotnet test "$project" -c Release --no-build
+            dotnet test "$project" -c Release
           done
