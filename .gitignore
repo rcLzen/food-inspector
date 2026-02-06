@@ -51,30 +51,38 @@ Thumbs.db
 htmlcov/
 
 # .NET Build artifacts (for MAUI app)
+## Build artifacts
 bin/
 obj/
 _bin/
 _obj/
 
-# User-specific files
+## User-specific files
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-# Visual Studio cache/options
+## Visual Studio cache/options
 .vs/
+.vscode/
 
-# NuGet Packages
+## NuGet Packages
 *.nupkg
 *.snupkg
 packages/
 
-# MAUI specific
+## Database files
+*.db
+*.db-shm
+*.db-wal
+
+## MAUI specific
+.DS_Store
 *.apk
 *.aab
 *.ipa
 
-# Cache and temp
+## Cache and temp
 .cache/
 *.log
