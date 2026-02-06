@@ -56,8 +56,8 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         {
             SafetyLevel.Avoid => isFlareMode ? "AVOID - Flare mode escalation active." : "AVOID - High-risk triggers found.",
             SafetyLevel.Caution => "CAUTION - Moderate-risk triggers found.",
-            _ => matched.DirectMatches.Any() || matched.CrossReactiveMatches.Any() 
-                ? "SAFE - Only low-risk triggers found." 
+            _ => matched.DirectMatches.Any() || matched.CrossReactiveMatches.Any()
+                ? "SAFE - Only low-risk triggers found."
                 : "SAFE - No mapped triggers found."
         };
 
