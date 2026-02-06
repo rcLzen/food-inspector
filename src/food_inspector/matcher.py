@@ -5,7 +5,8 @@ Ingredient Matcher with Synonym Dictionary and Word Boundary Matching
 import re
 import yaml
 import os
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
+from functools import lru_cache
 
 
 class IngredientMatcher:
@@ -14,9 +15,6 @@ class IngredientMatcher:
     
     Prevents false matches like "malt" matching "maltodextrin" unless explicitly allowed.
     """
-    
-    # Word boundary detection window size (characters to check before/after match)
-    WORD_BOUNDARY_WINDOW_SIZE = 20
     
     def __init__(self, synonyms_file: Optional[str] = None, exceptions: Optional[Dict[str, List[str]]] = None):
         """
@@ -44,8 +42,47 @@ class IngredientMatcher:
     
     def _load_synonyms(self, synonyms_file: str):
         """Load synonyms from YAML file."""
-        with open(synonyms_file, 'r') as f:
-            data = yaml.safe_load(f)
+        try:
+            with open(synonyms_file, 'r') as f:
+                data = yaml.safe_load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Ingredient synonyms file not found: '{synonyms_file}'. "
+                f"Please ensure the file exists."
+            )
+        except PermissionError:
+            raise PermissionError(
+                f"Permission denied when reading ingredient synonyms file: '{synonyms_file}'."
+            )
+        except yaml.YAMLError as e:
+            raise ValueError(
+                f"Invalid YAML format in ingredient synonyms file '{synonyms_file}': {e}"
+            )
+        
+        # Validate data structure
+        if data is None:
+            raise ValueError(
+                f"Ingredient synonyms file '{synonyms_file}' is empty or contains no data."
+            )
+        
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Invalid data structure in '{synonyms_file}': expected a dictionary "
+                f"mapping allergen categories to lists of synonyms, but got {type(data).__name__}."
+            )
+        
+        # Validate each category
+        for category, synonyms in data.items():
+            if not isinstance(synonyms, list):
+                raise ValueError(
+                    f"Invalid synonyms for category '{category}' in '{synonyms_file}': "
+                    f"expected a list, but got {type(synonyms).__name__}."
+                )
+            if not all(isinstance(s, str) for s in synonyms):
+                raise ValueError(
+                    f"Invalid synonyms for category '{category}' in '{synonyms_file}': "
+                    f"all synonyms must be strings."
+                )
         
         self.synonyms = data
         
@@ -54,9 +91,12 @@ class IngredientMatcher:
             for synonym in synonyms:
                 self.reverse_map[synonym.lower()] = category
     
+    @lru_cache(maxsize=256)
     def _create_word_boundary_pattern(self, term: str) -> re.Pattern:
         """
         Create a regex pattern that matches the term with word boundaries.
+        
+        Uses LRU cache to avoid recompiling patterns for repeated terms.
         
         Args:
             term: The ingredient term to match
@@ -89,60 +129,9 @@ class IngredientMatcher:
         
         for match in pattern.finditer(text):
             matched_text = match.group(0)
-            
-            # Check if this match should be excluded
-            if self._should_exclude_match(text, matched_text, match.start(), match.end(), ingredient):
-                continue
-            
             matches.append((matched_text, match.start(), match.end()))
         
         return matches
-    
-    def _should_exclude_match(self, text: str, matched_text: str, start: int, end: int, 
-                              ingredient: str) -> bool:
-        """
-        Determine if a match should be excluded based on exceptions.
-        
-        Args:
-            text: Full text being searched
-            matched_text: The matched text
-            start: Start position of match
-            end: End position of match
-            ingredient: The ingredient being searched for
-            
-        Returns:
-            True if match should be excluded, False otherwise
-        """
-        # Check if there's a larger word that contains this match
-        # Look for alphanumeric characters before and after
-        
-        # Get a window around the match to check for compound words
-        window_start = max(0, start - self.WORD_BOUNDARY_WINDOW_SIZE)
-        window_end = min(len(text), end + self.WORD_BOUNDARY_WINDOW_SIZE)
-        window = text[window_start:window_end]
-        
-        # Extract the word that contains our match
-        match_in_window = start - window_start
-        
-        # Find the boundaries of the containing word
-        word_start = match_in_window
-        while word_start > 0 and (window[word_start - 1].isalnum() or window[word_start - 1] in ['-', "'"]):
-            word_start -= 1
-        
-        word_end = match_in_window + len(matched_text)
-        while word_end < len(window) and (window[word_end].isalnum() or window[word_end] in ['-', "'"]):
-            word_end += 1
-        
-        containing_word = window[word_start:word_end]
-        
-        # If the containing word is different from matched text, check exceptions
-        if containing_word.lower() != matched_text.lower():
-            # Check if this compound word is in the allowed exceptions
-            exceptions_for_ingredient = self.exceptions.get(ingredient.lower(), [])
-            if containing_word.lower() not in [e.lower() for e in exceptions_for_ingredient]:
-                return True  # Exclude this match
-        
-        return False
     
     def find_allergen_category(self, text: str, category: str) -> Dict[str, List[Tuple[str, int, int]]]:
         """

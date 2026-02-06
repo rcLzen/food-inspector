@@ -3,7 +3,6 @@ Tests for IngredientMatcher
 """
 
 import pytest
-import os
 from food_inspector.matcher import IngredientMatcher
 
 

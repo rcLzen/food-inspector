@@ -28,6 +28,10 @@ class CrossReactivityChecker:
     Provides methods to query potential cross-reactions based on known allergens.
     """
     
+    # Confidence levels mapping for filtering
+    CONFIDENCE_LEVELS = {'low': 1, 'medium': 2, 'high': 3}
+    VALID_CONFIDENCES = {'low', 'medium', 'high'}
+    
     def __init__(self, rules_file: Optional[str] = None):
         """
         Initialize the cross-reactivity checker.
@@ -49,16 +53,67 @@ class CrossReactivityChecker:
     
     def _load_rules(self, rules_file: str):
         """Load cross-reactivity rules from YAML file."""
-        with open(rules_file, 'r') as f:
-            data = yaml.safe_load(f)
+        try:
+            with open(rules_file, 'r') as f:
+                data = yaml.safe_load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Cross-reactivity rules file not found: '{rules_file}'. "
+                f"Please ensure the file exists."
+            )
+        except PermissionError:
+            raise PermissionError(
+                f"Permission denied when reading cross-reactivity rules file: '{rules_file}'."
+            )
+        except yaml.YAMLError as e:
+            raise ValueError(
+                f"Invalid YAML format in cross-reactivity rules file '{rules_file}': {e}"
+            )
+        
+        # Validate data structure
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Invalid cross-reactivity configuration in '{rules_file}': "
+                f"expected a mapping at the top level."
+            )
         
         rules_data = data.get('cross_reactivity_rules', [])
         
-        for rule_dict in rules_data:
+        if not isinstance(rules_data, list):
+            raise ValueError(
+                f"Invalid 'cross_reactivity_rules' in '{rules_file}': expected a list."
+            )
+        
+        for index, rule_dict in enumerate(rules_data):
+            if not isinstance(rule_dict, dict):
+                raise ValueError(
+                    f"Invalid rule at index {index} in 'cross_reactivity_rules' "
+                    f"from '{rules_file}': expected a mapping."
+                )
+            
+            # Check for required fields
+            required_fields = ('source', 'target', 'confidence')
+            missing_fields = [field for field in required_fields if field not in rule_dict]
+            if missing_fields:
+                missing_str = ', '.join(missing_fields)
+                raise ValueError(
+                    f"Missing required field(s) '{missing_str}' in rule at index {index} "
+                    f"in 'cross_reactivity_rules' from '{rules_file}'."
+                )
+            
+            # Validate confidence value
+            confidence = rule_dict['confidence']
+            if confidence not in self.VALID_CONFIDENCES:
+                raise ValueError(
+                    f"Invalid confidence value '{confidence}' in cross-reactivity rule "
+                    f"for source '{rule_dict['source']}' and target '{rule_dict['target']}'. "
+                    f"Expected one of {sorted(self.VALID_CONFIDENCES)}."
+                )
+            
             rule = CrossReactivityRule(
                 source=rule_dict['source'],
                 target=rule_dict['target'],
-                confidence=rule_dict['confidence'],
+                confidence=confidence,
                 notes=rule_dict.get('notes', '')
             )
             self.rules.append(rule)
@@ -88,9 +143,8 @@ class CrossReactivityChecker:
         rules = self.rules_by_source.get(allergen, [])
         
         if min_confidence:
-            confidence_levels = {'low': 1, 'medium': 2, 'high': 3}
-            min_level = confidence_levels.get(min_confidence, 1)
-            rules = [r for r in rules if confidence_levels.get(r.confidence, 1) >= min_level]
+            min_level = self.CONFIDENCE_LEVELS.get(min_confidence, 1)
+            rules = [r for r in rules if self.CONFIDENCE_LEVELS.get(r.confidence, 1) >= min_level]
         
         return rules
     
@@ -109,9 +163,8 @@ class CrossReactivityChecker:
         rules = self.rules_by_target.get(target_allergen, [])
         
         if min_confidence:
-            confidence_levels = {'low': 1, 'medium': 2, 'high': 3}
-            min_level = confidence_levels.get(min_confidence, 1)
-            rules = [r for r in rules if confidence_levels.get(r.confidence, 1) >= min_level]
+            min_level = self.CONFIDENCE_LEVELS.get(min_confidence, 1)
+            rules = [r for r in rules if self.CONFIDENCE_LEVELS.get(r.confidence, 1) >= min_level]
         
         return rules
     
