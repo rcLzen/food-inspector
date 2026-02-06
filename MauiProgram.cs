@@ -33,6 +33,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
         builder.Services.AddSingleton<IBarcodeScannerService, BarcodeScannerService>();
         builder.Services.AddSingleton<IOcrService, OcrService>();
+        builder.Services.AddSingleton<IIngredientNormalizationService, IngredientNormalizationService>();
+        builder.Services.AddSingleton<IMatchingService, MatchingService>();
         builder.Services.AddSingleton<IIngredientAnalysisService, IngredientAnalysisService>();
         builder.Services.AddSingleton<IExportService, ExportService>();
         builder.Services.AddSingleton<ISettingsService, SettingsService>();

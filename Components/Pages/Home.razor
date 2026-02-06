@@ -17,7 +17,7 @@
     @if (isFlareMode)
     {
         <div class="alert alert-danger">
-            <strong>🔥 Flare Mode Active</strong> - Heightened sensitivity (threshold: @flareModeThreshold)
+            <strong>🔥 Flare Mode Active</strong> - Moderate findings escalate to AVOID.
         </div>
     }
 
@@ -35,29 +35,39 @@
         <div class="@GetSafetyCardClass(currentResult.SafetyLevel)">
             <h2>@GetSafetyLevelText(currentResult.SafetyLevel)</h2>
             <p><strong>@currentResult.Summary</strong></p>
-            
-            @if (currentResult.DetectedTriggers.Any())
+
+            <h4>Direct matches</h4>
+            @if (currentResult.DirectMatches.Any())
             {
-                <h4>Detected Triggers:</h4>
                 <ul>
-                    @foreach (var trigger in currentResult.DetectedTriggers)
+                    @foreach (var match in currentResult.DirectMatches)
                     {
-                        <li>@trigger</li>
+                        <li>@match.TriggerName (@match.Reason) from "@match.MatchedText"</li>
                     }
                 </ul>
             }
-            
-            @if (currentResult.Warnings.Any())
+            else
             {
-                <h4>Details:</h4>
-                <ul>
-                    @foreach (var warning in currentResult.Warnings)
-                    {
-                        <li>@warning</li>
-                    }
-                </ul>
+                <p>No direct matches.</p>
             }
-            
+
+            <h4>Cross-reactive matches</h4>
+            @if (currentResult.CrossReactiveMatches.Any())
+            {
+                @foreach (var match in currentResult.CrossReactiveMatches)
+                {
+                    <details class="mb-2">
+                        <summary>@match.SourceName → @match.TriggerName (@match.Strength) - @match.EvidenceCitationShort</summary>
+                        <div><strong>Citation:</strong> @match.EvidenceCitationFull</div>
+                        <div><strong>Summary:</strong> @match.EvidenceSummary</div>
+                    </details>
+                }
+            }
+            else
+            {
+                <p>No cross-reactive expansions.</p>
+            }
+
             <button class="btn btn-primary mt-3" @onclick="SaveToHistory">Save to History</button>
             <button class="btn btn-secondary mt-3" @onclick="Reset">New Scan</button>
         </div>
@@ -66,22 +76,14 @@
     {
         <div class="mb-3">
             <label for="ingredientsInput" class="form-label">Enter Ingredients:</label>
-            <textarea class="form-control" id="ingredientsInput" rows="5" 
-                      @bind="ingredientsText" 
+            <textarea class="form-control" id="ingredientsInput" rows="5"
+                      @bind="ingredientsText"
                       placeholder="Enter ingredients manually or use scanning options below..."></textarea>
         </div>
 
-        <button class="btn btn-primary scan-button" @onclick="ScanBarcode">
-            📷 Scan Barcode
-        </button>
-        
-        <button class="btn btn-info scan-button" @onclick="ScanIngredients">
-            📸 Scan Ingredients (OCR)
-        </button>
-        
-        <button class="btn btn-success scan-button" @onclick="AnalyzeManual">
-            🔍 Analyze Ingredients
-        </button>
+        <button class="btn btn-primary scan-button" @onclick="ScanBarcode">📷 Scan Barcode</button>
+        <button class="btn btn-info scan-button" @onclick="ScanIngredients">📸 Scan Ingredients (OCR)</button>
+        <button class="btn btn-success scan-button" @onclick="AnalyzeManual">🔍 Analyze Ingredients</button>
     }
 </div>
 
@@ -90,178 +92,69 @@
     private string? currentBarcode;
     private string? currentProductName;
     private AnalysisResult? currentResult;
-    private bool isLoading = false;
+    private bool isLoading;
     private string loadingMessage = "";
-    private bool isFlareMode = false;
+    private bool isFlareMode;
     private int flareModeThreshold = 5;
 
     protected override async Task OnInitializedAsync()
     {
-        // Initialize database
         await DatabaseService.InitializeDatabaseAsync();
-        
-        // Load settings
         isFlareMode = await SettingsService.GetFlareModeAsync();
         flareModeThreshold = await SettingsService.GetFlareModeThresholdAsync();
     }
 
-    private async Task ScanBarcode()
-    {
-        try
-        {
-            isLoading = true;
-            loadingMessage = "Opening camera for barcode scan...";
-            StateHasChanged();
-
-            // Note: In a real implementation, this would open the camera
-            // For demo purposes, this is a stub that will be implemented with ZXing
-            await Task.Delay(500);
-            
-            // TODO: Implement actual barcode scanning when camera is available
-            // This placeholder should be replaced with actual scanned barcode
-            currentBarcode = null; // Will be set by camera scan
-            
-            if (currentBarcode == null)
-            {
-                loadingMessage = "Camera scan not yet implemented. Please use manual entry.";
-                await Task.Delay(2000);
-                isLoading = false;
-                StateHasChanged();
-                return;
-            }
-            
-            // Try to get product info from Open Food Facts
-            loadingMessage = "Fetching product information...";
-            StateHasChanged();
-            
-            var product = await OpenFoodFacts.GetProductByBarcodeAsync(currentBarcode);
-            if (product != null)
-            {
-                currentProductName = product.ProductName;
-                ingredientsText = product.Ingredients ?? "";
-            }
-            
-            if (!string.IsNullOrWhiteSpace(ingredientsText))
-            {
-                await AnalyzeIngredients();
-            }
-            else
-            {
-                loadingMessage = "No product found. Please enter ingredients manually.";
-                await Task.Delay(2000);
-            }
-        }
-        catch (Exception ex)
-        {
-            loadingMessage = $"Error: {ex.Message}";
-            await Task.Delay(2000);
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task ScanIngredients()
-    {
-        try
-        {
-            isLoading = true;
-            loadingMessage = "Opening camera for ingredient photo...";
-            StateHasChanged();
-
-            await Task.Delay(500);
-            
-            // Note: In a real implementation, this would:
-            // 1. Open camera to take photo
-            // 2. Save photo
-            // 3. Run OCR on photo
-            // For demo purposes, we'll simulate
-            
-            loadingMessage = "Processing image with OCR...";
-            StateHasChanged();
-            await Task.Delay(1000);
-            
-            // Simulated OCR result
-            var ocrResult = ""; // await OcrService.ExtractTextFromImageAsync(imagePath);
-            
-            if (!string.IsNullOrWhiteSpace(ocrResult))
-            {
-                ingredientsText = ocrResult;
-                await AnalyzeIngredients();
-            }
-            else
-            {
-                loadingMessage = "No text detected. Please try again or enter manually.";
-                await Task.Delay(2000);
-            }
-        }
-        catch (Exception ex)
-        {
-            loadingMessage = $"Error: {ex.Message}";
-            await Task.Delay(2000);
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
-    }
+    private async Task ScanBarcode() { await Task.CompletedTask; }
+    private async Task ScanIngredients() { await Task.CompletedTask; }
 
     private async Task AnalyzeManual()
     {
-        if (string.IsNullOrWhiteSpace(ingredientsText))
+        if (!string.IsNullOrWhiteSpace(ingredientsText))
         {
-            return;
+            await AnalyzeIngredients();
         }
-
-        await AnalyzeIngredients();
     }
 
     private async Task AnalyzeIngredients()
     {
-        try
-        {
-            isLoading = true;
-            loadingMessage = "Analyzing ingredients...";
-            StateHasChanged();
+        isLoading = true;
+        loadingMessage = "Analyzing ingredients...";
+        StateHasChanged();
 
-            currentResult = await AnalysisService.AnalyzeIngredientsAsync(
-                ingredientsText, 
-                isFlareMode, 
-                flareModeThreshold);
-        }
-        catch (Exception ex)
-        {
-            loadingMessage = $"Error: {ex.Message}";
-            await Task.Delay(2000);
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
+        currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode, flareModeThreshold);
+
+        isLoading = false;
     }
 
     private async Task SaveToHistory()
     {
-        if (currentResult == null) return;
-
-        var scan = new FoodScanHistory
+        if (currentResult == null)
         {
-            ScanDate = DateTime.Now,
+            return;
+        }
+
+        var record = new ScanRecord
+        {
+            CreatedUtc = DateTime.UtcNow,
             Barcode = currentBarcode,
             ProductName = currentProductName,
-            Ingredients = ingredientsText,
-            SafetyLevel = currentResult.SafetyLevel,
-            Analysis = System.Text.Json.JsonSerializer.Serialize(currentResult),
-            IsFlareMode = isFlareMode
+            RawIngredientsText = ingredientsText,
+            FinalStatus = currentResult.SafetyLevel,
+            FlareModeOn = isFlareMode,
+            AnalysisSummary = currentResult.Summary,
+            Matches = currentResult.DirectMatches
+                .Concat(currentResult.CrossReactiveMatches)
+                .Select(x => new ScanMatch
+                {
+                    TriggerId = x.TriggerId,
+                    MatchedText = x.MatchedText,
+                    Reason = x.Reason,
+                    EvidenceSourceId = x.EvidenceSourceId
+                })
+                .ToList()
         };
 
-        await DatabaseService.SaveScanHistoryAsync(scan);
-        
-        // Navigate to history
+        await DatabaseService.SaveScanHistoryAsync(record);
         Navigation.NavigateTo("/history");
     }
 
@@ -271,28 +164,21 @@
         currentBarcode = null;
         currentProductName = null;
         currentResult = null;
-        StateHasChanged();
     }
 
-    private string GetSafetyCardClass(SafetyLevel level)
+    private static string GetSafetyCardClass(SafetyLevel level) => level switch
     {
-        return level switch
-        {
-            SafetyLevel.Safe => "safety-card safety-safe",
-            SafetyLevel.Caution => "safety-card safety-caution",
-            SafetyLevel.Avoid => "safety-card safety-avoid",
-            _ => "safety-card"
-        };
-    }
+        SafetyLevel.Safe => "safety-card safety-safe",
+        SafetyLevel.Caution => "safety-card safety-caution",
+        SafetyLevel.Avoid => "safety-card safety-avoid",
+        _ => "safety-card"
+    };
 
-    private string GetSafetyLevelText(SafetyLevel level)
+    private static string GetSafetyLevelText(SafetyLevel level) => level switch
     {
-        return level switch
-        {
-            SafetyLevel.Safe => "✅ SAFE",
-            SafetyLevel.Caution => "⚠️ CAUTION",
-            SafetyLevel.Avoid => "🚫 AVOID",
-            _ => "UNKNOWN"
-        };
-    }
+        SafetyLevel.Safe => "✅ SAFE",
+        SafetyLevel.Caution => "⚠️ CAUTION",
+        SafetyLevel.Avoid => "🚫 AVOID",
+        _ => "UNKNOWN"
+    };
 }

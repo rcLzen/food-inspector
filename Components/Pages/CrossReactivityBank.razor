@@ -1,0 +1,56 @@
+@page "/cross-reactivity"
+@using FoodInspector.Models
+@using FoodInspector.Services
+@inject IDatabaseService DatabaseService
+
+<PageTitle>Cross-Reactivity Bank</PageTitle>
+
+<h1>Cross-Reactivity Bank</h1>
+<input class="form-control mb-3" placeholder="Search category or citation" @bind="search" />
+
+@foreach (var rule in FilteredRules)
+{
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>@(rule.SourceTrigger?.Name ?? rule.SourceCategory) → @(rule.TargetTrigger?.Name ?? rule.TargetCategory)</strong>
+                    <div>Strength: @rule.Strength</div>
+                    <div>@rule.EvidenceSource?.CitationShort</div>
+                </div>
+                <div>
+                    <input type="checkbox" checked="@rule.Enabled" @onchange="(e) => ToggleRule(rule, (bool)e.Value!)" /> Enabled
+                </div>
+            </div>
+            <details>
+                <summary>Evidence details</summary>
+                <div><strong>Citation:</strong> @rule.EvidenceSource?.CitationFull</div>
+                <div><strong>Summary:</strong> @rule.EvidenceSource?.Summary</div>
+                <div><a href="@rule.EvidenceSource?.Url" target="_blank">@rule.EvidenceSource?.Url</a></div>
+                <div><em>@rule.Notes</em></div>
+            </details>
+        </div>
+    </div>
+}
+
+@code {
+    private string search = string.Empty;
+    private List<CrossReactivityRule> rules = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        rules = await DatabaseService.GetCrossReactivityRulesAsync();
+    }
+
+    private IEnumerable<CrossReactivityRule> FilteredRules => rules.Where(r =>
+        string.IsNullOrWhiteSpace(search)
+        || (r.SourceCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
+        || (r.TargetCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
+        || (r.EvidenceSource?.CitationShort.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    private async Task ToggleRule(CrossReactivityRule rule, bool enabled)
+    {
+        await DatabaseService.ToggleCrossReactivityRuleAsync(rule.Id, enabled);
+        rule.Enabled = enabled;
+    }
+}

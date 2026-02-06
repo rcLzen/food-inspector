@@ -9,13 +9,13 @@ namespace FoodInspector.Services;
 
 public interface IExportService
 {
-    Task<string> ExportToCsvAsync(List<FoodScanHistory> scans);
-    Task<string> ExportToJsonAsync(List<FoodScanHistory> scans);
+    Task<string> ExportToCsvAsync(List<ScanRecord> scans);
+    Task<string> ExportToJsonAsync(List<ScanRecord> scans);
 }
 
 public class ExportService : IExportService
 {
-    public async Task<string> ExportToCsvAsync(List<FoodScanHistory> scans)
+    public async Task<string> ExportToCsvAsync(List<ScanRecord> scans)
     {
         var filePath = Path.Combine(FileSystem.CacheDirectory, $"food_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
         
@@ -27,7 +27,7 @@ public class ExportService : IExportService
         return filePath;
     }
 
-    public async Task<string> ExportToJsonAsync(List<FoodScanHistory> scans)
+    public async Task<string> ExportToJsonAsync(List<ScanRecord> scans)
     {
         var filePath = Path.Combine(FileSystem.CacheDirectory, $"food_history_{DateTime.Now:yyyyMMdd_HHmmss}.json");
         
