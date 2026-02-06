@@ -7,15 +7,14 @@ namespace FoodInspector.Services;
 public interface IDatabaseService
 {
     Task InitializeDatabaseAsync();
-    Task<List<ScanRecord>> GetScanHistoryAsync();
-    Task<ScanRecord> SaveScanHistoryAsync(ScanRecord scan);
-    Task<List<Trigger>> GetAllTriggersAsync();
-    Task<List<TriggerSynonym>> GetAllSynonymsAsync();
-    Task<List<CrossReactivityRule>> GetCrossReactivityRulesAsync();
+    Task<List<FoodScanHistory>> GetScanHistoryAsync();
+    Task<FoodScanHistory> SaveScanHistoryAsync(FoodScanHistory scan);
+    Task<List<IngredientTrigger>> GetAllTriggersAsync();
+    Task<List<IngredientSynonym>> GetAllSynonymsAsync();
+    Task<List<CrossReactivity>> GetAllCrossReactivitiesAsync();
     Task<AppSettings> GetSettingsAsync();
     Task<AppSettings> SaveSettingsAsync(AppSettings settings);
     Task DeleteScanHistoryAsync(int id);
-    Task ToggleCrossReactivityRuleAsync(int id, bool enabled);
 }
 
 public class DatabaseService : IDatabaseService
@@ -31,63 +30,72 @@ public class DatabaseService : IDatabaseService
 
     public async Task InitializeDatabaseAsync()
     {
-        _ = await _secureStorage.GetEncryptionKeyAsync();
-        await _context.Database.EnsureCreatedAsync();
+        try
+        {
+            // Get encryption key
+            var key = await _secureStorage.GetEncryptionKeyAsync();
+            
+            // Ensure database is created with schema
+            // Use EnsureCreated instead of Migrate for MAUI apps
+            await _context.Database.EnsureCreatedAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Database initialization error: {ex.Message}");
+            throw;
+        }
     }
 
-    public async Task<List<ScanRecord>> GetScanHistoryAsync()
+    public async Task<List<FoodScanHistory>> GetScanHistoryAsync()
     {
-        return await _context.ScanRecords
-            .Include(x => x.Matches)
-            .OrderByDescending(s => s.CreatedUtc)
+        return await _context.ScanHistory
+            .OrderByDescending(s => s.ScanDate)
             .ToListAsync();
     }
 
-    public async Task<ScanRecord> SaveScanHistoryAsync(ScanRecord scan)
+    public async Task<FoodScanHistory> SaveScanHistoryAsync(FoodScanHistory scan)
     {
         if (scan.Id == 0)
         {
-            _context.ScanRecords.Add(scan);
+            _context.ScanHistory.Add(scan);
         }
         else
         {
-            _context.ScanRecords.Update(scan);
+            _context.ScanHistory.Update(scan);
         }
-
         await _context.SaveChangesAsync();
         return scan;
     }
 
-    public Task<List<Trigger>> GetAllTriggersAsync() =>
-        _context.Triggers.Where(x => x.Enabled).ToListAsync();
-
-    public async Task<List<TriggerSynonym>> GetAllSynonymsAsync()
+    public async Task<List<IngredientTrigger>> GetAllTriggersAsync()
     {
-        return await _context.TriggerSynonyms
-            .Include(s => s.Trigger)
+        return await _context.IngredientTriggers.ToListAsync();
+    }
+
+    public async Task<List<IngredientSynonym>> GetAllSynonymsAsync()
+    {
+        return await _context.IngredientSynonyms
+            .Include(s => s.IngredientTrigger)
             .ToListAsync();
     }
 
-    public async Task<List<CrossReactivityRule>> GetCrossReactivityRulesAsync()
+    public async Task<List<CrossReactivity>> GetAllCrossReactivitiesAsync()
     {
-        return await _context.CrossReactivityRules
-            .Include(x => x.SourceTrigger)
-            .Include(x => x.TargetTrigger)
-            .Include(x => x.EvidenceSource)
+        return await _context.CrossReactivities
+            .Include(c => c.PrimaryTrigger)
+            .Include(c => c.RelatedTrigger)
             .ToListAsync();
     }
 
     public async Task<AppSettings> GetSettingsAsync()
     {
         var settings = await _context.AppSettings.FirstOrDefaultAsync();
-        if (settings != null)
+        if (settings == null)
         {
-            return settings;
+            settings = new AppSettings { IsFlareMode = false, FlareModeThreshold = 5 };
+            _context.AppSettings.Add(settings);
+            await _context.SaveChangesAsync();
         }
-
-        settings = new AppSettings { IsFlareMode = false, FlareModeThreshold = 5 };
-        _context.AppSettings.Add(settings);
-        await _context.SaveChangesAsync();
         return settings;
     }
 
@@ -100,25 +108,11 @@ public class DatabaseService : IDatabaseService
 
     public async Task DeleteScanHistoryAsync(int id)
     {
-        var scan = await _context.ScanRecords.FindAsync(id);
-        if (scan == null)
+        var scan = await _context.ScanHistory.FindAsync(id);
+        if (scan != null)
         {
-            return;
+            _context.ScanHistory.Remove(scan);
+            await _context.SaveChangesAsync();
         }
-
-        _context.ScanRecords.Remove(scan);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task ToggleCrossReactivityRuleAsync(int id, bool enabled)
-    {
-        var rule = await _context.CrossReactivityRules.FindAsync(id);
-        if (rule == null)
-        {
-            return;
-        }
-
-        rule.Enabled = enabled;
-        await _context.SaveChangesAsync();
     }
 }
