@@ -6,9 +6,14 @@ on:
       - main
     paths:
       - .github/workflows/dotnet-maui-ci.yml
-      - '*.cs'
-      - '*.xaml'
-      - '*.csproj'
+      - App.xaml
+      - App.xaml.cs
+      - FoodInspector.csproj
+      - GlobalUsings.cs
+      - MainPage.xaml
+      - MainPage.xaml.cs
+      - MauiProgram.cs
+      - ManualTestScenarios.cs
       - Components/**
       - Data/**
       - Models/**
@@ -19,9 +24,14 @@ on:
   pull_request:
     paths:
       - .github/workflows/dotnet-maui-ci.yml
-      - '*.cs'
-      - '*.xaml'
-      - '*.csproj'
+      - App.xaml
+      - App.xaml.cs
+      - FoodInspector.csproj
+      - GlobalUsings.cs
+      - MainPage.xaml
+      - MainPage.xaml.cs
+      - MauiProgram.cs
+      - ManualTestScenarios.cs
       - Components/**
       - Data/**
       - Models/**
@@ -48,9 +58,11 @@ jobs:
         run: dotnet build FoodInspector.csproj -c Release -f net8.0-android --no-restore
       - name: Test
         run: |
-          TEST_PROJECTS=$(find . -name "*Tests.csproj" -o -name "*Test.csproj")
-          if [ -z "$TEST_PROJECTS" ]; then
+          mapfile -t TEST_PROJECTS < <(find . -name "*Tests.csproj" -o -name "*Test.csproj")
+          if [ ${#TEST_PROJECTS[@]} -eq 0 ]; then
             echo "No test projects found."
             exit 0
           fi
-          dotnet test $TEST_PROJECTS -c Release --no-build
+          for project in "${TEST_PROJECTS[@]}"; do
+            dotnet test "$project" -c Release --no-build
+          done
