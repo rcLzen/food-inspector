@@ -96,8 +96,8 @@ public class MatchingService : IMatchingService
 
         foreach (var rule in rules.Where(x => x.Enabled))
         {
-            // Skip rules that have no defined source; such rules cannot ever match.
-            if (!rule.SourceTriggerId.HasValue && string.IsNullOrWhiteSpace(rule.SourceCategory))
+            // Skip rules that don't have valid source and target definitions
+            if (!IsValidRule(rule))
             {
                 continue;
             }
@@ -107,12 +107,6 @@ public class MatchingService : IMatchingService
                 (!string.IsNullOrWhiteSpace(rule.SourceCategory) && directByCategory.Contains(rule.SourceCategory));
 
             if (!sourceMatch)
-            {
-                continue;
-            }
-
-            // Skip rules that have no defined target; such rules cannot match anything.
-            if (!rule.TargetTriggerId.HasValue && string.IsNullOrWhiteSpace(rule.TargetCategory))
             {
                 continue;
             }
@@ -180,5 +174,15 @@ public class MatchingService : IMatchingService
         }
 
         return SafetyLevel.Safe;
+    }
+
+    /// <summary>
+    /// Validates that a cross-reactivity rule has at least one non-null source and one non-null target.
+    /// </summary>
+    private static bool IsValidRule(CrossReactivityRule rule)
+    {
+        var hasValidSource = rule.SourceTriggerId.HasValue || !string.IsNullOrWhiteSpace(rule.SourceCategory);
+        var hasValidTarget = rule.TargetTriggerId.HasValue || !string.IsNullOrWhiteSpace(rule.TargetCategory);
+        return hasValidSource && hasValidTarget;
     }
 }
