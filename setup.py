@@ -17,4 +17,7 @@ setup(
             "pytest-cov>=2.12.0",
         ],
     },
+    package_data={
+        "": ["data/*.yaml"],
+    },
 )
