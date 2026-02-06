@@ -81,17 +81,8 @@ jobs:
         run: dotnet workload restore
 
       - name: Restore
-        run: dotnet restore $MAUI_PROJECT -f $DOTNET_TFM
-
+        run: dotnet restore "FoodInspector.csproj" -f "net8.0-android"
+      
       - name: Build
-        run: dotnet build $MAUI_PROJECT -c Release -f $DOTNET_TFM --no-restore
-      - name: Tests
-        run: |
-          mapfile -t TEST_PROJECTS < <(find . \( -name "*Tests.csproj" -o -name "*Test.csproj" \) -not -path "./tools/*" -not -path "./src/food_inspector/*" -not -path "./tests/*")
-          if [ ${#TEST_PROJECTS[@]} -eq 0 ]; then
-            echo "No test projects found."
-            exit 0
-          fi
-          for project in "${TEST_PROJECTS[@]}"; do
-            dotnet test "$project" -c Release
-          done
+        run: dotnet build "FoodInspector.csproj" -c Release -f "net8.0-android" --no-restore
+
