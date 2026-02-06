@@ -35,24 +35,24 @@
                     <div class="flex-grow-1">
                         <h5>
                             @(scan.ProductName ?? "Manual Scan")
-                            @if (scan.IsFlareMode)
+                            @if (scan.FlareModeOn)
                             {
                                 <span class="flare-mode-badge">🔥 Flare Mode</span>
                             }
                         </h5>
-                        <small class="text-muted">@scan.ScanDate.ToString("g")</small>
+                        <small class="text-muted">@scan.CreatedUtc.ToString("g")</small>
                         
                         @if (!string.IsNullOrEmpty(scan.Barcode))
                         {
                             <p><strong>Barcode:</strong> @scan.Barcode</p>
                         }
                         
-                        <div class="@GetSafetyBadgeClass(scan.SafetyLevel)">
-                            @GetSafetyLevelText(scan.SafetyLevel)
+                        <div class="@GetSafetyBadgeClass(scan.FinalStatus)">
+                            @GetSafetyLevelText(scan.FinalStatus)
                         </div>
                         
                         <p class="mt-2"><strong>Ingredients:</strong></p>
-                        <p class="small">@(scan.Ingredients.Length > 200 ? scan.Ingredients.Substring(0, 200) + "..." : scan.Ingredients)</p>
+                        <p class="small">@(scan.RawIngredientsText.Length > 200 ? scan.RawIngredientsText.Substring(0, 200) + "..." : scan.RawIngredientsText)</p>
                     </div>
                     
                     <button class="btn btn-danger btn-sm" @onclick="() => DeleteScan(scan.Id)">Delete</button>
@@ -70,7 +70,7 @@
 </div>
 
 @code {
-    private List<FoodScanHistory> history = new();
+    private List<ScanRecord> history = new();
     private bool isLoading = true;
     private string exportMessage = "";
 
