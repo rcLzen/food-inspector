@@ -61,7 +61,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Restore workloads
-        run: dotnet workload restore
+        run: dotnet workload restore --sdk-version 8.0
       - name: Restore
         run: dotnet restore $MAUI_PROJECT -f $DOTNET_TFM
       - name: Build
