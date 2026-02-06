@@ -1,6 +1,7 @@
 using FoodInspector.Data;
 using FoodInspector.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using ZXing.Net.Maui.Controls;
@@ -39,8 +40,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<IExportService, ExportService>();
         builder.Services.AddSingleton<ISettingsService, SettingsService>();
         
-        // Register HttpClient for OpenFoodFactsService
-        builder.Services.AddHttpClient<IOpenFoodFactsService, OpenFoodFactsService>();
+        // Register HttpClient and OpenFoodFactsService
+        builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://world.openfoodfacts.org/") });
+        builder.Services.AddSingleton<IOpenFoodFactsService, OpenFoodFactsService>();
 
         // Configure database
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "foodinspector.db");

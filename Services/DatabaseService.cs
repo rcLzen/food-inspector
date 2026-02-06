@@ -31,8 +31,20 @@ public class DatabaseService : IDatabaseService
 
     public async Task InitializeDatabaseAsync()
     {
-        _ = await _secureStorage.GetEncryptionKeyAsync();
-        await _context.Database.EnsureCreatedAsync();
+        try
+        {
+            // Get encryption key
+            var key = await _secureStorage.GetEncryptionKeyAsync();
+            
+            // Ensure database is created with schema
+            // Use EnsureCreated instead of Migrate for MAUI apps
+            await _context.Database.EnsureCreatedAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Database initialization error: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task<List<ScanRecord>> GetScanHistoryAsync()
