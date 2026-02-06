@@ -24,8 +24,11 @@ class IngredientMatcher:
         
         Args:
             synonyms_file: Path to YAML file with ingredient synonyms
-            exceptions: Dictionary mapping ingredient terms to allowed exceptions
-                       (e.g., {"malt": ["maltodextrin"]} to allow maltodextrin to match malt)
+            exceptions: Optional dictionary reserved for future use to configure
+                        term-specific exceptions. Currently this parameter does not
+                        override word-boundary matching or enable partial-word
+                        matches (for example, {"malt": ["maltodextrin"]} will NOT
+                        cause "maltodextrin" to match "malt").
         """
         self.synonyms: Dict[str, List[str]] = {}
         self.reverse_map: Dict[str, str] = {}  # Maps synonym to allergen category
