@@ -33,10 +33,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
         builder.Services.AddSingleton<IBarcodeScannerService, BarcodeScannerService>();
         builder.Services.AddSingleton<IOcrService, OcrService>();
-        builder.Services.AddSingleton<IOpenFoodFactsService, OpenFoodFactsService>();
         builder.Services.AddSingleton<IIngredientAnalysisService, IngredientAnalysisService>();
         builder.Services.AddSingleton<IExportService, ExportService>();
         builder.Services.AddSingleton<ISettingsService, SettingsService>();
+        
+        // Register HttpClient for OpenFoodFactsService
+        builder.Services.AddHttpClient<IOpenFoodFactsService, OpenFoodFactsService>();
 
         // Configure database
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "foodinspector.db");

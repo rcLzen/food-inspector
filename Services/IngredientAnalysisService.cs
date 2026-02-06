@@ -50,7 +50,9 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         {
             if (ingredientsLower.Contains(trigger.Name.ToLower()))
             {
-                // In Flare Mode, check severity threshold
+                // In Flare Mode, only flag triggers that meet or exceed the severity threshold
+                // This makes the app MORE sensitive by focusing on higher-severity items
+                // In Normal Mode, flag all detected triggers regardless of severity
                 if (isFlareMode && trigger.SeverityScore >= flareModeThreshold)
                 {
                     detectedTriggerIds.Add(trigger.Id);
@@ -83,6 +85,7 @@ public class IngredientAnalysisService : IIngredientAnalysisService
             {
                 var trigger = synonym.IngredientTrigger;
                 
+                // Apply same Flare Mode logic for synonyms
                 if (isFlareMode && trigger.SeverityScore >= flareModeThreshold)
                 {
                     if (detectedTriggerIds.Add(trigger.Id))

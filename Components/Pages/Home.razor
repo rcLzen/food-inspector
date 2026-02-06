@@ -114,11 +114,21 @@
             StateHasChanged();
 
             // Note: In a real implementation, this would open the camera
-            // For demo purposes, allow manual input
+            // For demo purposes, this is a stub that will be implemented with ZXing
             await Task.Delay(500);
             
-            // Simulate barcode scan or manual entry
-            currentBarcode = "0000000000000"; // Placeholder
+            // TODO: Implement actual barcode scanning when camera is available
+            // This placeholder should be replaced with actual scanned barcode
+            currentBarcode = null; // Will be set by camera scan
+            
+            if (currentBarcode == null)
+            {
+                loadingMessage = "Camera scan not yet implemented. Please use manual entry.";
+                await Task.Delay(2000);
+                isLoading = false;
+                StateHasChanged();
+                return;
+            }
             
             // Try to get product info from Open Food Facts
             loadingMessage = "Fetching product information...";

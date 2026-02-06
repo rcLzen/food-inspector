@@ -22,9 +22,16 @@ public class SecureStorageService : ISecureStorageService
             }
             return key;
         }
-        catch
+        catch (PlatformNotSupportedException ex)
         {
-            // If secure storage fails, generate a key
+            // Platform doesn't support secure storage, generate and store in-memory key
+            System.Diagnostics.Debug.WriteLine($"SecureStorage not supported: {ex.Message}");
+            return GenerateRandomKey();
+        }
+        catch (Exception ex)
+        {
+            // If secure storage fails for other reasons, generate a key
+            System.Diagnostics.Debug.WriteLine($"SecureStorage error: {ex.Message}");
             var key = GenerateRandomKey();
             await SetEncryptionKeyAsync(key);
             return key;

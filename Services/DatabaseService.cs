@@ -40,7 +40,7 @@ public class DatabaseService : IDatabaseService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Database initialization error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Database initialization error: {ex.Message}");
             throw;
         }
     }

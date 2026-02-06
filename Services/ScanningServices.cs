@@ -51,12 +51,10 @@ public class OpenFoodFactsService : IOpenFoodFactsService
 {
     private readonly HttpClient _httpClient;
 
-    public OpenFoodFactsService()
+    public OpenFoodFactsService(HttpClient httpClient)
     {
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri("https://world.openfoodfacts.org/")
-        };
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri("https://world.openfoodfacts.org/");
     }
 
     public async Task<OpenFoodFactsProduct?> GetProductByBarcodeAsync(string barcode)
@@ -74,7 +72,7 @@ public class OpenFoodFactsService : IOpenFoodFactsService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Open Food Facts API error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Open Food Facts API error: {ex.Message}");
         }
         return null;
     }
