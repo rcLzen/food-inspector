@@ -9,6 +9,30 @@ from typing import Dict, List, Tuple, Optional
 from functools import lru_cache
 
 
+@lru_cache(maxsize=256)
+def _compile_word_boundary_pattern(term: str) -> re.Pattern:
+    """
+    Create a regex pattern that matches the term with word boundaries.
+    
+    Module-level function with LRU cache to avoid recompiling patterns for repeated terms.
+    Using a module-level function prevents memory leaks from caching instance methods.
+    
+    Args:
+        term: The ingredient term to match
+        
+    Returns:
+        Compiled regex pattern with word boundaries
+    """
+    # Escape special regex characters
+    escaped_term = re.escape(term)
+    
+    # Use word boundaries to match whole words only
+    # \b matches word boundaries (transition between \w and \W)
+    pattern = r'\b' + escaped_term + r'\b'
+    
+    return re.compile(pattern, re.IGNORECASE)
+
+
 class IngredientMatcher:
     """
     Matches ingredients using a synonym dictionary with word-boundary-safe matching.
@@ -91,28 +115,6 @@ class IngredientMatcher:
             for synonym in synonyms:
                 self.reverse_map[synonym.lower()] = category
     
-    @lru_cache(maxsize=256)
-    def _create_word_boundary_pattern(self, term: str) -> re.Pattern:
-        """
-        Create a regex pattern that matches the term with word boundaries.
-        
-        Uses LRU cache to avoid recompiling patterns for repeated terms.
-        
-        Args:
-            term: The ingredient term to match
-            
-        Returns:
-            Compiled regex pattern with word boundaries
-        """
-        # Escape special regex characters
-        escaped_term = re.escape(term)
-        
-        # Use word boundaries to match whole words only
-        # \b matches word boundaries (transition between \w and \W)
-        pattern = r'\b' + escaped_term + r'\b'
-        
-        return re.compile(pattern, re.IGNORECASE)
-    
     def find_ingredient(self, text: str, ingredient: str) -> List[Tuple[str, int, int]]:
         """
         Find all occurrences of an ingredient in text using word-boundary matching.
@@ -124,7 +126,7 @@ class IngredientMatcher:
         Returns:
             List of tuples (matched_text, start_pos, end_pos)
         """
-        pattern = self._create_word_boundary_pattern(ingredient)
+        pattern = _compile_word_boundary_pattern(ingredient)
         matches = []
         
         for match in pattern.finditer(text):

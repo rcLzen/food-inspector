@@ -30,7 +30,6 @@ class CrossReactivityChecker:
     
     # Confidence levels mapping for filtering
     CONFIDENCE_LEVELS = {'low': 1, 'medium': 2, 'high': 3}
-    VALID_CONFIDENCES = {'low', 'medium', 'high'}
     
     def __init__(self, rules_file: Optional[str] = None):
         """
@@ -103,11 +102,11 @@ class CrossReactivityChecker:
             
             # Validate confidence value
             confidence = rule_dict['confidence']
-            if confidence not in self.VALID_CONFIDENCES:
+            if confidence not in self.CONFIDENCE_LEVELS:
                 raise ValueError(
                     f"Invalid confidence value '{confidence}' in cross-reactivity rule "
                     f"for source '{rule_dict['source']}' and target '{rule_dict['target']}'. "
-                    f"Expected one of {sorted(self.VALID_CONFIDENCES)}."
+                    f"Expected one of {sorted(self.CONFIDENCE_LEVELS.keys())}."
                 )
             
             rule = CrossReactivityRule(
