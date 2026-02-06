@@ -1,0 +1,89 @@
+# Cross-Reactivity Rules
+# Maps source allergen to potential cross-reactive targets
+# Format: source -> [targets with confidence and notes]
+
+cross_reactivity_rules:
+  - source: dairy
+    target: beef
+    confidence: low
+    notes: "Some people with milk allergy may react to beef due to bovine serum albumin"
+    
+  - source: dairy
+    target: goat_milk
+    confidence: high
+    notes: "Goat milk contains similar proteins to cow's milk; high cross-reactivity"
+    
+  - source: peanuts
+    target: tree_nuts
+    confidence: medium
+    notes: "About 25-40% of peanut-allergic individuals also react to tree nuts"
+    
+  - source: tree_nuts
+    target: peanuts
+    confidence: low
+    notes: "Cross-reactivity is less common from tree nuts to peanuts"
+    
+  - source: shellfish
+    target: dust_mites
+    confidence: low
+    notes: "Both contain tropomyosin protein; some cross-reactivity possible"
+    
+  - source: shellfish
+    target: insects
+    confidence: low
+    notes: "Arthropod cross-reactivity due to shared proteins"
+    
+  - source: fish
+    target: shellfish
+    confidence: low
+    notes: "Different protein structures; cross-reactivity is rare but processing contamination is common"
+    
+  - source: soy
+    target: other_legumes
+    confidence: low
+    notes: "Some cross-reactivity with peas, lentils, and beans possible"
+    
+  - source: wheat
+    target: other_grains
+    confidence: low
+    notes: "May cross-react with other gluten-containing grains (barley, rye)"
+    
+  - source: latex
+    target: banana
+    confidence: medium
+    notes: "Latex-fruit syndrome; shared proteins cause cross-reactivity"
+    
+  - source: latex
+    target: avocado
+    confidence: medium
+    notes: "Latex-fruit syndrome; shared proteins cause cross-reactivity"
+    
+  - source: latex
+    target: kiwi
+    confidence: medium
+    notes: "Latex-fruit syndrome; shared proteins cause cross-reactivity"
+    
+  - source: birch_pollen
+    target: apple
+    confidence: high
+    notes: "Oral allergy syndrome; heat-labile proteins"
+    
+  - source: birch_pollen
+    target: cherry
+    confidence: high
+    notes: "Oral allergy syndrome; heat-labile proteins"
+    
+  - source: birch_pollen
+    target: hazelnut
+    confidence: medium
+    notes: "Oral allergy syndrome; proteins Bet v 1 and Bet v 2"
+    
+  - source: ragweed_pollen
+    target: melon
+    confidence: medium
+    notes: "Oral allergy syndrome; cross-reactivity with ragweed proteins"
+    
+  - source: ragweed_pollen
+    target: banana
+    confidence: low
+    notes: "Oral allergy syndrome; some cross-reactivity possible"

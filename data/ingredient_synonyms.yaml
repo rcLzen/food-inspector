@@ -1,0 +1,175 @@
+# Ingredient Synonym Dictionary
+# Maps allergen categories to their various forms and synonyms
+
+dairy:
+  - milk
+  - whey
+  - casein
+  - caseinate
+  - lactose
+  - curds
+  - butter
+  - buttermilk
+  - cream
+  - half-and-half
+  - ghee
+  - cheese
+  - yogurt
+  - kefir
+  - lactalbumin
+  - lactoglobulin
+  - milk solids
+  - milk powder
+  - nonfat milk
+  - skim milk
+  - whole milk
+  - milk protein
+  - milk fat
+
+soy:
+  - soybean
+  - soybeans
+  - soya
+  - tofu
+  - tempeh
+  - edamame
+  - miso
+  - natto
+  - soy sauce
+  - tamari
+  - soy protein
+  - soy lecithin
+  - lecithin
+  - textured vegetable protein
+  - TVP
+  - soy flour
+  - soy milk
+  - soy oil
+  - hydrolyzed soy protein
+
+gluten:
+  - wheat
+  - barley
+  - rye
+  - malt
+  - malt extract
+  - malt syrup
+  - malt flavoring
+  - malt vinegar
+  - brewer's yeast
+  - wheat flour
+  - wheat starch
+  - wheat protein
+  - wheat bran
+  - wheat germ
+  - bulgur
+  - couscous
+  - durum
+  - farina
+  - semolina
+  - spelt
+  - kamut
+  - triticale
+  - graham flour
+  - seitan
+  - vital wheat gluten
+
+tree_nuts:
+  - almond
+  - almonds
+  - brazil nut
+  - brazil nuts
+  - cashew
+  - cashews
+  - chestnut
+  - chestnuts
+  - hazelnut
+  - hazelnuts
+  - filbert
+  - filberts
+  - macadamia
+  - macadamias
+  - pecan
+  - pecans
+  - pine nut
+  - pine nuts
+  - pignolia
+  - pistachio
+  - pistachios
+  - walnut
+  - walnuts
+  - nut oil
+  - nut butter
+  - nut meal
+  - nut flour
+
+peanuts:
+  - peanut
+  - groundnut
+  - goober
+  - monkey nut
+  - peanut butter
+  - peanut oil
+  - peanut flour
+  - peanut protein
+
+eggs:
+  - egg
+  - eggs
+  - egg white
+  - egg yolk
+  - egg albumin
+  - egg lecithin
+  - albumin
+  - globulin
+  - livetin
+  - lysozyme
+  - ovalbumin
+  - ovomucin
+  - ovomucoid
+  - ovovitellin
+  - meringue
+  - mayonnaise
+  - egg substitute
+
+fish:
+  - fish
+  - cod
+  - salmon
+  - tuna
+  - halibut
+  - bass
+  - anchovies
+  - sardines
+  - tilapia
+  - fish sauce
+  - fish oil
+  - fish stock
+  - fish gelatin
+
+shellfish:
+  - shellfish
+  - shrimp
+  - prawn
+  - crab
+  - lobster
+  - crayfish
+  - crawfish
+  - clam
+  - mussel
+  - oyster
+  - scallop
+  - squid
+  - octopus
+  - calamari
+
+sesame:
+  - sesame
+  - sesame seed
+  - sesame oil
+  - tahini
+  - benne
+  - gingelly
+  - til
+  - sesamol
+  - sesamolina
