@@ -1,0 +1,56 @@
+name: dotnet-maui-ci
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/dotnet-maui-ci.yml
+      - '*.cs'
+      - '*.xaml'
+      - '*.csproj'
+      - Components/**
+      - Data/**
+      - Models/**
+      - Resources/**
+      - Services/**
+      - wwwroot/**
+      - Platforms/**
+  pull_request:
+    paths:
+      - .github/workflows/dotnet-maui-ci.yml
+      - '*.cs'
+      - '*.xaml'
+      - '*.csproj'
+      - Components/**
+      - Data/**
+      - Models/**
+      - Resources/**
+      - Services/**
+      - wwwroot/**
+      - Platforms/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore workloads
+        run: dotnet workload restore
+      - name: Restore
+        run: dotnet restore FoodInspector.csproj -f net8.0-android
+      - name: Build
+        run: dotnet build FoodInspector.csproj -c Release -f net8.0-android --no-restore
+      - name: Test
+        run: |
+          TEST_PROJECTS=$(find . -name "*Tests.csproj" -o -name "*Test.csproj")
+          if [ -z "$TEST_PROJECTS" ]; then
+            echo "No test projects found."
+            exit 0
+          fi
+          dotnet test $TEST_PROJECTS -c Release --no-build
