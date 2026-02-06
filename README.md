@@ -4,6 +4,8 @@ A comprehensive food safety system consisting of:
 1. **MAUI Mobile App** - Consumer-facing mobile application for scanning food products and detecting allergens
 2. **Data Generation Tools** - Python-based tools for generating versioned reference data
 
+**Note:** The MAUI V1 app is the primary deliverable. Python tooling lives under `/tools` (with the supporting library in `/src/food_inspector`) and is build-time only; it is not part of the MAUI app build.
+
 ## Components
 
 ### 1. MAUI Mobile App (Consumer Allergen Scanner)

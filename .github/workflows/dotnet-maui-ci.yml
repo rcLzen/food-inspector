@@ -1,0 +1,88 @@
+name: dotnet-maui-ci
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/dotnet-maui-ci.yml
+      - App.xaml
+      - App.xaml.cs
+      - FoodInspector.csproj
+      - GlobalUsings.cs
+      - MainPage.xaml
+      - MainPage.xaml.cs
+      - MauiProgram.cs
+      - ManualTestScenarios.cs
+      - Components/**
+      - Data/**
+      - Models/**
+      - Resources/**
+      - Services/**
+      - wwwroot/**
+      - Platforms/**
+  pull_request:
+    paths:
+      - .github/workflows/dotnet-maui-ci.yml
+      - App.xaml
+      - App.xaml.cs
+      - FoodInspector.csproj
+      - GlobalUsings.cs
+      - MainPage.xaml
+      - MainPage.xaml.cs
+      - MauiProgram.cs
+      - ManualTestScenarios.cs
+      - Components/**
+      - Data/**
+      - Models/**
+      - Resources/**
+      - Services/**
+      - wwwroot/**
+      - Platforms/**
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet_tfm:
+          - net8.0-android
+    env:
+      DOTNET_TFM: ${{ matrix.dotnet_tfm }}
+      MAUI_PROJECT: FoodInspector.csproj
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Java (required for Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify SDK
+        run: |
+          dotnet --version
+          dotnet --info
+
+      # Optional but often more reliable than workload restore alone:
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Restore workloads
+        run: dotnet workload restore
+
+      - name: Restore
+        run: dotnet restore "FoodInspector.csproj" -f "net8.0-android"
+      
+      - name: Build
+        run: dotnet build "FoodInspector.csproj" -c Release -f "net8.0-android" --no-restore
+
