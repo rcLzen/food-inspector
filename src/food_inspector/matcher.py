@@ -15,6 +15,9 @@ class IngredientMatcher:
     Prevents false matches like "malt" matching "maltodextrin" unless explicitly allowed.
     """
     
+    # Word boundary detection window size (characters to check before/after match)
+    WORD_BOUNDARY_WINDOW_SIZE = 20
+    
     def __init__(self, synonyms_file: Optional[str] = None, exceptions: Optional[Dict[str, List[str]]] = None):
         """
         Initialize the ingredient matcher.
@@ -111,8 +114,8 @@ class IngredientMatcher:
         # Look for alphanumeric characters before and after
         
         # Get a window around the match to check for compound words
-        window_start = max(0, start - 20)
-        window_end = min(len(text), end + 20)
+        window_start = max(0, start - self.WORD_BOUNDARY_WINDOW_SIZE)
+        window_end = min(len(text), end + self.WORD_BOUNDARY_WINDOW_SIZE)
         window = text[window_start:window_end]
         
         # Extract the word that contains our match
