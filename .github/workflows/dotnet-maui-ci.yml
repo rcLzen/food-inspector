@@ -53,20 +53,39 @@ jobs:
     env:
       DOTNET_TFM: ${{ matrix.dotnet_tfm }}
       MAUI_PROJECT: FoodInspector.csproj
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup .NET
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Setup Java (required for Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify SDK
+        run: |
+          dotnet --version
+          dotnet --info
+
+      # Optional but often more reliable than workload restore alone:
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
       - name: Restore workloads
-        run: dotnet workload restore --sdk-version 8.0
+        run: dotnet workload restore
+
       - name: Restore
         run: dotnet restore $MAUI_PROJECT -f $DOTNET_TFM
+
       - name: Build
         run: dotnet build $MAUI_PROJECT -c Release -f $DOTNET_TFM --no-restore
-      - name: Test
+      - name: Tests
         run: |
           mapfile -t TEST_PROJECTS < <(find . \( -name "*Tests.csproj" -o -name "*Test.csproj" \) -not -path "./tools/*" -not -path "./src/food_inspector/*" -not -path "./tests/*")
           if [ ${#TEST_PROJECTS[@]} -eq 0 ]; then
