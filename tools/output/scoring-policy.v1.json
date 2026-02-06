@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-02-06T06:03:37.143593Z",
+  "scoring_thresholds": {
+    "critical": 90,
+    "high": 70,
+    "medium": 50,
+    "low": 30
+  },
+  "flare_mode": {
+    "default_threshold": 5,
+    "escalation_multiplier": 1.5,
+    "min_threshold": 1,
+    "max_threshold": 10,
+    "description": "Flare mode heightens sensitivity by only flagging triggers with severity >= threshold"
+  },
+  "severity_levels": {
+    "1": "Minimal - mild sensitivity",
+    "2-3": "Low - minor reactions possible",
+    "4-6": "Medium - moderate reactions",
+    "7-8": "High - significant reactions",
+    "9-10": "Critical - severe reactions, common allergens"
+  }
+}

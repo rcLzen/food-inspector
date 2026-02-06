@@ -1,3 +1,8 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 # ===================================
 # Python
 # ===================================
@@ -24,6 +29,41 @@ parts/
 sdist/
 var/
 wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data files (generated) - exclude from root but allow in tools/output
+/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Keep tools/output generated files
+!tools/output/*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# .NET Build artifacts (for MAUI app)
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/

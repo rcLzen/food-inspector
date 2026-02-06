@@ -1,0 +1,201 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-02-06T06:03:37.143088Z",
+  "data": [
+    {
+      "trigger_id": 1,
+      "canonical_name": "Peanuts",
+      "synonyms": [
+        "groundnut",
+        "arachis oil",
+        "goober",
+        "monkey nut",
+        "peanut butter",
+        "peanut flour"
+      ]
+    },
+    {
+      "trigger_id": 2,
+      "canonical_name": "Tree Nuts",
+      "synonyms": [
+        "almond",
+        "cashew",
+        "walnut",
+        "pecan",
+        "pistachio",
+        "macadamia",
+        "hazelnut",
+        "brazil nut",
+        "pine nut",
+        "nut butter"
+      ]
+    },
+    {
+      "trigger_id": 3,
+      "canonical_name": "Milk",
+      "synonyms": [
+        "dairy",
+        "lactose",
+        "casein",
+        "whey",
+        "butter",
+        "cheese",
+        "cream",
+        "yogurt",
+        "milk powder",
+        "milk solids",
+        "ghee"
+      ]
+    },
+    {
+      "trigger_id": 4,
+      "canonical_name": "Eggs",
+      "synonyms": [
+        "albumin",
+        "egg white",
+        "egg yolk",
+        "mayonnaise",
+        "egg protein",
+        "ovomucoid",
+        "ovalbumin"
+      ]
+    },
+    {
+      "trigger_id": 5,
+      "canonical_name": "Soy",
+      "synonyms": [
+        "soya",
+        "soybean",
+        "tofu",
+        "edamame",
+        "soy sauce",
+        "soy protein",
+        "soy lecithin",
+        "tempeh",
+        "miso"
+      ]
+    },
+    {
+      "trigger_id": 6,
+      "canonical_name": "Wheat",
+      "synonyms": [
+        "wheat flour",
+        "wheat starch",
+        "wheat protein",
+        "whole wheat",
+        "durum",
+        "semolina",
+        "spelt",
+        "farro",
+        "bread flour"
+      ]
+    },
+    {
+      "trigger_id": 7,
+      "canonical_name": "Fish",
+      "synonyms": [
+        "salmon",
+        "tuna",
+        "cod",
+        "anchovy",
+        "fish sauce",
+        "fish oil",
+        "seafood"
+      ]
+    },
+    {
+      "trigger_id": 8,
+      "canonical_name": "Shellfish",
+      "synonyms": [
+        "shrimp",
+        "prawn",
+        "crab",
+        "lobster",
+        "oyster",
+        "clam",
+        "mussel",
+        "scallop",
+        "crayfish"
+      ]
+    },
+    {
+      "trigger_id": 9,
+      "canonical_name": "Sesame",
+      "synonyms": [
+        "tahini",
+        "sesame oil",
+        "sesame seed",
+        "sesamol"
+      ]
+    },
+    {
+      "trigger_id": 10,
+      "canonical_name": "MSG",
+      "synonyms": [
+        "monosodium glutamate",
+        "glutamate",
+        "E621",
+        "yeast extract",
+        "hydrolyzed protein"
+      ]
+    },
+    {
+      "trigger_id": 11,
+      "canonical_name": "Sulfites",
+      "synonyms": [
+        "sulfur dioxide",
+        "sodium sulfite",
+        "E220",
+        "E221",
+        "metabisulfite"
+      ]
+    },
+    {
+      "trigger_id": 12,
+      "canonical_name": "Corn",
+      "synonyms": [
+        "maize",
+        "corn starch",
+        "corn syrup",
+        "cornmeal",
+        "high fructose corn syrup",
+        "dextrose",
+        "maltodextrin"
+      ]
+    },
+    {
+      "trigger_id": 13,
+      "canonical_name": "Nitrates",
+      "synonyms": [
+        "sodium nitrate",
+        "sodium nitrite",
+        "E250",
+        "E251",
+        "curing salt"
+      ]
+    },
+    {
+      "trigger_id": 14,
+      "canonical_name": "Artificial Colors",
+      "synonyms": [
+        "FD&C",
+        "food dye",
+        "tartrazine",
+        "yellow 5",
+        "red 40",
+        "blue 1"
+      ]
+    },
+    {
+      "trigger_id": 15,
+      "canonical_name": "Gluten",
+      "synonyms": [
+        "wheat gluten",
+        "barley",
+        "rye",
+        "malt",
+        "brewer's yeast"
+      ]
+    }
+  ]
+}
