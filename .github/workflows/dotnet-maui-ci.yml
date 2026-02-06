@@ -40,6 +40,9 @@ on:
       - wwwroot/**
       - Platforms/**
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
