@@ -1,253 +1,66 @@
 # Food Inspector
 
-A comprehensive food inspection scoring system with configurable thresholds, flare-mode policy, and data packaging for V1 ingestion.
+A comprehensive food safety system consisting of:
+1. **MAUI Mobile App** - Consumer-facing mobile application for scanning food products and detecting allergens
+2. **Data Generation Tools** - Python-based tools for generating versioned reference data
 
-## Features
+## Components
 
-### 🎯 Scoring Model
-- **Configurable Thresholds**: Customize severity levels (critical, high, medium, low)
-- **Weighted Scoring**: Multi-criteria evaluation with configurable weights
-  - Food Safety (40%)
-  - Cleanliness (30%)
-  - Temperature Control (20%)
-  - Employee Hygiene (10%)
-- **Flexible Configuration**: JSON-based configuration system
+### 1. MAUI Mobile App (Consumer Allergen Scanner)
 
-### 🚨 Flare-Mode Policy
-- **Automatic Trigger**: Activates when scores exceed defined thresholds
-- **Priority Escalation**: Applies configurable multipliers to base priority
-- **Alert System**: Immediate notifications for critical situations
-- **Configurable Parameters**:
-  - Trigger score threshold
-  - Escalation multiplier
-  - Alert threshold
+A .NET 8 MAUI Blazor Hybrid mobile application that helps users identify potential food allergens and triggers.
 
-### 📦 Data Package for V1 Ingestion
-- **JSON Export Format**: Structured data export for easy integration
-- **SQLite Database**: Complete schema with relationships
-- **Migration Scripts**: Database initialization and version management
-- **Seed Scripts**: Sample data for testing and development
+**Features:**
+- Barcode scanning and OCR ingredient extraction
+- Allergen detection with synonym matching
+- Cross-reactivity warnings
+- Flare Mode for heightened sensitivity
+- Encrypted local database
+- Offline-first with online enrichment
 
-## Installation
+**Technology:** .NET 8, MAUI, Blazor, SQLite
 
-```bash
-# Clone the repository
-git clone https://github.com/rcLzen/food-inspector.git
-cd food-inspector
+### 2. Data Generation Tools (Build-Time Only)
 
-# Install in development mode
-pip install -e .
-```
+Python tools that generate versioned JSON reference data consumed by the MAUI app. **No runtime Python dependency.**
 
-## Quick Start
+**Generated Files:**
+- `synonyms.v1.json` - Ingredient synonym mappings
+- `cross-reactivity.v1.json` - Cross-reactivity relationships
+- `scoring-policy.v1.json` - Scoring thresholds and flare-mode config
 
-### 1. Run the Demo
+## Usage
+
+### Generate Data Files
 
 ```bash
-python examples/demo.py
+cd tools/data-generator
+python generate_data.py --version 1 --output ../output --pretty
 ```
 
-This will:
-- Initialize the scoring model with configuration
-- Evaluate sample inspections
-- Create and seed a SQLite database
-- Export data to JSON format
+See [tools/README.md](tools/README.md) for detailed documentation.
 
-### 2. Use the CLI Tool
+## Why Separate Tools?
 
-```bash
-# Initialize a new database with sample data
-python cli.py init food_inspection.db --seed
+- ✅ No runtime Python dependency in mobile app
+- ✅ Version-controlled reference data
+- ✅ Clear separation between build-time and runtime
+- ✅ Easy to update and regenerate data
+- ✅ Simple deployment (just JSON files)
 
-# Calculate an inspection score
-python cli.py score \
-  --food-safety 85 \
-  --cleanliness 78 \
-  --temperature-control 82 \
-  --employee-hygiene 75 \
-  --check-flare
+## Integration Workflow
 
-# Export database to JSON
-python cli.py export food_inspection.db output.json
+1. Update data in Python generators
+2. Run generation script to create JSON files
+3. Review generated files
+4. Copy JSON files to MAUI project's data directory
+5. Commit both generator changes and JSON files
+6. MAUI app loads JSON files at startup
 
-# Check database version
-python cli.py version food_inspection.db
-```
+## Versioning
 
-### 3. Use the Scoring Model in Code
-
-```python
-from food_inspector.scoring import ScoringModel, FlareMode
-
-# Initialize with config
-scoring_model = ScoringModel("config.json")
-flare_mode = FlareMode("config.json")
-
-# Evaluate an inspection
-inspection_data = {
-    "food_safety": 85,
-    "cleanliness": 78,
-    "temperature_control": 82,
-    "employee_hygiene": 75
-}
-
-evaluation = scoring_model.evaluate_inspection(inspection_data)
-print(f"Score: {evaluation['score']}")
-print(f"Severity: {evaluation['severity']}")
-
-# Check flare mode
-flare_eval = flare_mode.evaluate_flare(evaluation['score'])
-if flare_eval['flare_triggered']:
-    print("⚠️ FLARE MODE TRIGGERED!")
-    print(f"Priority escalated: {flare_eval['escalated_priority']}")
-```
-
-### 4. Database Operations in Code
-
-```python
-from food_inspector.database import init_database, seed_database
-from food_inspector.export import export_to_json
-
-# Initialize database
-init_database("food_inspection.db")
-
-# Add sample data
-seed_database("food_inspection.db")
-
-# Export to JSON
-export_to_json("food_inspection.db", "export.json")
-```
-
-## Configuration
-
-Edit `config.json` to customize thresholds and policies:
-
-```json
-{
-  "scoring_thresholds": {
-    "critical": 90,
-    "high": 70,
-    "medium": 50,
-    "low": 30
-  },
-  "flare_mode": {
-    "enabled": true,
-    "trigger_score": 80,
-    "escalation_multiplier": 1.5,
-    "alert_threshold": 85
-  },
-  "inspection_weights": {
-    "food_safety": 0.40,
-    "cleanliness": 0.30,
-    "temperature_control": 0.20,
-    "employee_hygiene": 0.10
-  }
-}
-```
-
-## Database Schema
-
-### Tables
-
-- **establishments**: Food service establishments
-- **inspections**: Inspection records with scores
-- **violations**: Specific violations found during inspections
-- **configuration**: System configuration storage
-
-### JSON Export Format
-
-```json
-{
-  "version": "1.0.0",
-  "export_date": "2024-01-01T12:00:00",
-  "data": {
-    "establishments": [...],
-    "inspections": [...],
-    "violations": [...],
-    "configuration": [...]
-  },
-  "metadata": {
-    "total_establishments": 5,
-    "total_inspections": 10,
-    "total_violations": 3
-  }
-}
-```
-
-## API Reference
-
-### Command Line Interface
-
-```bash
-# Initialize database
-python cli.py init <database_path> [--seed]
-
-# Export to JSON
-python cli.py export <database_path> <output_json>
-
-# Import from JSON
-python cli.py import <input_json> <database_path>
-
-# Calculate score
-python cli.py score \
-  --food-safety <0-100> \
-  --cleanliness <0-100> \
-  --temperature-control <0-100> \
-  --employee-hygiene <0-100> \
-  [--config <config_file>] \
-  [--check-flare]
-
-# Check database version
-python cli.py version <database_path>
-```
-
-### ScoringModel
-
-```python
-class ScoringModel:
-    def __init__(config_path: Optional[str] = None)
-    def calculate_score(inspection_data: Dict[str, float]) -> float
-    def get_severity(score: float) -> str
-    def evaluate_inspection(inspection_data: Dict[str, float]) -> Dict[str, Any]
-```
-
-### FlareMode
-
-```python
-class FlareMode:
-    def __init__(config_path: Optional[str] = None)
-    def is_enabled() -> bool
-    def should_trigger(score: float) -> bool
-    def should_alert(score: float) -> bool
-    def apply_escalation(base_priority: int) -> int
-    def evaluate_flare(score: float, base_priority: int = 5) -> Dict[str, Any]
-```
-
-## Project Structure
-
-```
-food-inspector/
-├── config.json                 # Configuration file
-├── pyproject.toml             # Package configuration
-├── README.md                  # This file
-├── cli.py                     # Command-line interface
-├── food_inspector/            # Main package
-│   ├── __init__.py
-│   ├── scoring.py             # Scoring model & flare mode
-│   ├── export.py              # JSON export/import
-│   └── database/              # Database modules
-│       ├── __init__.py
-│       ├── schema.py          # Database schema
-│       ├── migrate.py         # Migration scripts
-│       └── seed.py            # Seed data
-├── examples/                  # Example scripts
-│   ├── demo.py                # Complete demonstration
-│   ├── test_scoring.py        # Unit tests
-│   └── sample_export.json     # Sample JSON format
-└── data/                      # Generated data files
-    ├── food_inspection.db     # SQLite database (generated)
-    └── export.json            # JSON export (generated)
-```
+- **Data files:** Major version in filename (e.g., `synonyms.v1.json`)
+- **MAUI app:** Checks compatibility with data file versions
 
 ## License
 

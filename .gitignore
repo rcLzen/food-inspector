@@ -32,11 +32,14 @@ ENV/
 *.swo
 *~
 
-# Data files (generated)
-data/
+# Data files (generated) - exclude from root but allow in tools/output
+/data/
 *.db
 *.sqlite
 *.sqlite3
+
+# Keep tools/output generated files
+!tools/output/*.json
 
 # OS
 .DS_Store
@@ -46,3 +49,32 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# .NET Build artifacts (for MAUI app)
+bin/
+obj/
+_bin/
+_obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache/options
+.vs/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+
+# MAUI specific
+*.apk
+*.aab
+*.ipa
+
+# Cache and temp
+.cache/
+*.log

@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-02-06T06:03:37.143378Z",
+  "data": [
+    {
+      "primary_trigger_id": 1,
+      "related_trigger_id": 2,
+      "description": "Peanut allergy may cross-react with tree nuts in some individuals"
+    },
+    {
+      "primary_trigger_id": 2,
+      "related_trigger_id": 1,
+      "description": "Tree nut allergy may cross-react with peanuts"
+    },
+    {
+      "primary_trigger_id": 3,
+      "related_trigger_id": 5,
+      "description": "Some individuals with milk allergy may react to soy protein"
+    },
+    {
+      "primary_trigger_id": 6,
+      "related_trigger_id": 15,
+      "description": "Wheat contains gluten; both should be avoided for celiac/gluten sensitivity"
+    },
+    {
+      "primary_trigger_id": 15,
+      "related_trigger_id": 6,
+      "description": "Gluten sensitivity requires avoiding wheat and other gluten-containing grains"
+    },
+    {
+      "primary_trigger_id": 7,
+      "related_trigger_id": 8,
+      "description": "Fish and shellfish are different allergen classes but may cause cross-contamination"
+    },
+    {
+      "primary_trigger_id": 8,
+      "related_trigger_id": 7,
+      "description": "Shellfish allergy typically requires avoiding all shellfish species"
+    },
+    {
+      "primary_trigger_id": 12,
+      "related_trigger_id": 6,
+      "description": "Some individuals sensitive to corn may also react to wheat"
+    },
+    {
+      "primary_trigger_id": 10,
+      "related_trigger_id": 5,
+      "description": "MSG sensitivity may be aggravated by naturally occurring glutamates in soy"
+    }
+  ]
+}
