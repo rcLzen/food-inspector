@@ -16,6 +16,5 @@
     <Compile Include="../Models/Models.cs" Link="Models.cs" />
     <Compile Include="../Services/IngredientNormalizationService.cs" Link="IngredientNormalizationService.cs" />
     <Compile Include="../Services/MatchingService.cs" Link="MatchingService.cs" />
-    <Compile Include="MatchingServiceTests.cs" />
   </ItemGroup>
 </Project>

@@ -147,6 +147,9 @@
             return;
         }
 
+        // Create ScanRecord with related ScanMatch entities.
+        // EF Core will automatically populate ScanMatch.ScanRecordId when the parent ScanRecord is saved
+        // due to the cascade relationship configuration in the DbContext.
         var record = new ScanRecord
         {
             CreatedUtc = DateTime.UtcNow,

@@ -42,11 +42,15 @@
         rules = await DatabaseService.GetCrossReactivityRulesAsync();
     }
 
+    // Search filter checks if the search term appears in SourceCategory, TargetCategory, or CitationShort.
+    // If any of these properties are null, the null-conditional operator (?.) will return null,
+    // which is then compared with false, excluding that specific property from the match but not the entire rule.
+    // This means a rule can still match if any of the other non-null properties contain the search term.
     private IEnumerable<CrossReactivityRule> FilteredRules => rules.Where(r =>
         string.IsNullOrWhiteSpace(search)
         || (r.SourceCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
         || (r.TargetCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-        || (r.EvidenceSource?.CitationShort.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+        || (r.EvidenceSource?.CitationShort?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
 
     private async Task ToggleRule(CrossReactivityRule rule, bool enabled)
     {
