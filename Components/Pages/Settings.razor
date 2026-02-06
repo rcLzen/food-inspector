@@ -1,0 +1,129 @@
+@page "/settings"
+@using FoodInspector.Services
+@inject ISettingsService SettingsService
+
+<PageTitle>Settings - Food Inspector</PageTitle>
+
+<div class="page-container">
+    <h1>Settings</h1>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">🔥 Flare Mode</h5>
+            <p class="card-text">
+                Flare Mode increases sensitivity to potential triggers. When enabled, 
+                the app will flag ingredients based on their severity score threshold.
+            </p>
+            
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="flareModeSwitch" 
+                       @bind="isFlareMode" @onclick="ToggleFlareMode">
+                <label class="form-check-label" for="flareModeSwitch">
+                    <strong>@(isFlareMode ? "Enabled" : "Disabled")</strong>
+                </label>
+            </div>
+
+            @if (isFlareMode)
+            {
+                <div class="mb-3">
+                    <label for="thresholdSlider" class="form-label">
+                        Severity Threshold: <strong>@flareModeThreshold</strong>
+                    </label>
+                    <input type="range" class="form-range" min="1" max="10" 
+                           id="thresholdSlider" 
+                           @bind="flareModeThreshold" 
+                           @oninput="UpdateThreshold">
+                    <small class="form-text text-muted">
+                        Triggers with severity score >= @flareModeThreshold will be flagged.
+                        (1 = most lenient, 10 = most strict)
+                    </small>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">About Food Inspector</h5>
+            <p class="card-text">
+                <strong>Version:</strong> 1.0.0<br/>
+                <strong>Features:</strong>
+            </p>
+            <ul>
+                <li>Barcode scanning with Open Food Facts integration</li>
+                <li>Ingredient OCR (Optical Character Recognition)</li>
+                <li>Offline ingredient analysis</li>
+                <li>Smart trigger matching with synonyms and cross-reactivity detection</li>
+                <li>Flare Mode for heightened sensitivity</li>
+                <li>Scan history with CSV/JSON export</li>
+                <li>Encrypted local database with SQLCipher</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">How It Works</h5>
+            <p class="card-text">
+                <strong>Safety Levels:</strong>
+            </p>
+            <ul>
+                <li><span class="badge bg-success">SAFE</span> - No known triggers detected</li>
+                <li><span class="badge bg-warning">CAUTION</span> - Minor triggers or sensitivities detected</li>
+                <li><span class="badge bg-danger">AVOID</span> - Major allergens or high-severity triggers detected</li>
+            </ul>
+            <p class="mt-3">
+                The app analyzes ingredients against a database of common allergens, 
+                food sensitivities, and problematic ingredients. It also checks for 
+                synonyms and cross-reactivities to provide comprehensive safety analysis.
+            </p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(saveMessage))
+    {
+        <div class="alert alert-success mt-3">
+            @saveMessage
+        </div>
+    }
+</div>
+
+@code {
+    private bool isFlareMode = false;
+    private int flareModeThreshold = 5;
+    private string saveMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        isFlareMode = await SettingsService.GetFlareModeAsync();
+        flareModeThreshold = await SettingsService.GetFlareModeThresholdAsync();
+    }
+
+    private async Task ToggleFlareMode()
+    {
+        // The value will be toggled by the @bind
+        await Task.Delay(100); // Small delay to ensure binding updates
+        await SaveSettings();
+    }
+
+    private async Task UpdateThreshold(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int value))
+        {
+            flareModeThreshold = value;
+            await SaveSettings();
+        }
+    }
+
+    private async Task SaveSettings()
+    {
+        await SettingsService.SetFlareModeAsync(isFlareMode);
+        await SettingsService.SetFlareModeThresholdAsync(flareModeThreshold);
+        
+        saveMessage = "Settings saved successfully!";
+        StateHasChanged();
+        await Task.Delay(2000);
+        saveMessage = "";
+        StateHasChanged();
+    }
+}
