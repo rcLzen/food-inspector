@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "export_date": "2024-01-01T12:00:00",
+  "data": {
+    "establishments": [
+      {
+        "id": 1,
+        "name": "Example Restaurant",
+        "address": "123 Main St",
+        "city": "Springfield",
+        "state": "IL",
+        "zip_code": "62701",
+        "establishment_type": "Restaurant",
+        "license_number": "REST-2024-001",
+        "created_at": "2024-01-01T10:00:00",
+        "updated_at": "2024-01-01T10:00:00"
+      }
+    ],
+    "inspections": [
+      {
+        "id": 1,
+        "establishment_id": 1,
+        "inspection_date": "2024-01-15T14:00:00",
+        "inspector_name": "Jane Smith",
+        "food_safety_score": 95.0,
+        "cleanliness_score": 92.0,
+        "temperature_control_score": 98.0,
+        "employee_hygiene_score": 90.0,
+        "total_score": 94.3,
+        "severity": "critical",
+        "flare_triggered": 1,
+        "alert_required": 1,
+        "notes": "Excellent compliance",
+        "created_at": "2024-01-15T14:30:00"
+      }
+    ],
+    "violations": [],
+    "configuration": [
+      {
+        "id": 1,
+        "config_key": "schema_version",
+        "config_value": "1.0.0",
+        "description": "Database schema version",
+        "updated_at": "2024-01-01T10:00:00"
+      }
+    ]
+  },
+  "metadata": {
+    "total_establishments": 1,
+    "total_inspections": 1,
+    "total_violations": 0,
+    "configuration_items": 1
+  }
+}

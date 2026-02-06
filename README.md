@@ -53,7 +53,28 @@ This will:
 - Create and seed a SQLite database
 - Export data to JSON format
 
-### 2. Use the Scoring Model
+### 2. Use the CLI Tool
+
+```bash
+# Initialize a new database with sample data
+python cli.py init food_inspection.db --seed
+
+# Calculate an inspection score
+python cli.py score \
+  --food-safety 85 \
+  --cleanliness 78 \
+  --temperature-control 82 \
+  --employee-hygiene 75 \
+  --check-flare
+
+# Export database to JSON
+python cli.py export food_inspection.db output.json
+
+# Check database version
+python cli.py version food_inspection.db
+```
+
+### 3. Use the Scoring Model in Code
 
 ```python
 from food_inspector.scoring import ScoringModel, FlareMode
@@ -81,7 +102,7 @@ if flare_eval['flare_triggered']:
     print(f"Priority escalated: {flare_eval['escalated_priority']}")
 ```
 
-### 3. Database Operations
+### 4. Database Operations in Code
 
 ```python
 from food_inspector.database import init_database, seed_database
@@ -155,6 +176,31 @@ Edit `config.json` to customize thresholds and policies:
 
 ## API Reference
 
+### Command Line Interface
+
+```bash
+# Initialize database
+python cli.py init <database_path> [--seed]
+
+# Export to JSON
+python cli.py export <database_path> <output_json>
+
+# Import from JSON
+python cli.py import <input_json> <database_path>
+
+# Calculate score
+python cli.py score \
+  --food-safety <0-100> \
+  --cleanliness <0-100> \
+  --temperature-control <0-100> \
+  --employee-hygiene <0-100> \
+  [--config <config_file>] \
+  [--check-flare]
+
+# Check database version
+python cli.py version <database_path>
+```
+
 ### ScoringModel
 
 ```python
@@ -184,6 +230,7 @@ food-inspector/
 ├── config.json                 # Configuration file
 ├── pyproject.toml             # Package configuration
 ├── README.md                  # This file
+├── cli.py                     # Command-line interface
 ├── food_inspector/            # Main package
 │   ├── __init__.py
 │   ├── scoring.py             # Scoring model & flare mode
@@ -194,7 +241,9 @@ food-inspector/
 │       ├── migrate.py         # Migration scripts
 │       └── seed.py            # Seed data
 ├── examples/                  # Example scripts
-│   └── demo.py                # Complete demonstration
+│   ├── demo.py                # Complete demonstration
+│   ├── test_scoring.py        # Unit tests
+│   └── sample_export.json     # Sample JSON format
 └── data/                      # Generated data files
     ├── food_inspection.db     # SQLite database (generated)
     └── export.json            # JSON export (generated)
