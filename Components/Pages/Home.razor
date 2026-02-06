@@ -121,9 +121,23 @@
         loadingMessage = "Analyzing ingredients...";
         StateHasChanged();
 
-        currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode, flareModeThreshold);
-
-        isLoading = false;
+        try
+        {
+            currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode);
+        }
+        catch (Exception ex)
+        {
+            currentResult = new AnalysisResult
+            {
+                SafetyLevel = SafetyLevel.Safe,
+                Summary = $"Error analyzing ingredients: {ex.Message}"
+            };
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 
     private async Task SaveToHistory()

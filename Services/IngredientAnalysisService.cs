@@ -4,7 +4,7 @@ namespace FoodInspector.Services;
 
 public interface IIngredientAnalysisService
 {
-    Task<AnalysisResult> AnalyzeIngredientsAsync(string ingredients, bool isFlareMode, int flareModeThreshold);
+    Task<AnalysisResult> AnalyzeIngredientsAsync(string ingredients, bool isFlareMode);
 }
 
 public class AnalysisResult
@@ -26,7 +26,7 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         _matchingService = matchingService;
     }
 
-    public async Task<AnalysisResult> AnalyzeIngredientsAsync(string ingredients, bool isFlareMode, int flareModeThreshold)
+    public async Task<AnalysisResult> AnalyzeIngredientsAsync(string ingredients, bool isFlareMode)
     {
         if (string.IsNullOrWhiteSpace(ingredients))
         {
@@ -56,7 +56,9 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         {
             SafetyLevel.Avoid => isFlareMode ? "AVOID - Flare mode escalation active." : "AVOID - High-risk triggers found.",
             SafetyLevel.Caution => "CAUTION - Moderate-risk triggers found.",
-            _ => "SAFE - No mapped triggers found."
+            _ => matched.DirectMatches.Any() || matched.CrossReactiveMatches.Any() 
+                ? "SAFE - Only low-risk triggers found." 
+                : "SAFE - No mapped triggers found."
         };
 
         return result;

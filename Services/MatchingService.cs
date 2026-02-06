@@ -96,11 +96,23 @@ public class MatchingService : IMatchingService
 
         foreach (var rule in rules.Where(x => x.Enabled))
         {
+            // Skip rules that have no defined source; such rules cannot ever match.
+            if (!rule.SourceTriggerId.HasValue && string.IsNullOrWhiteSpace(rule.SourceCategory))
+            {
+                continue;
+            }
+
             var sourceMatch =
                 (rule.SourceTriggerId.HasValue && directTriggerIds.Contains(rule.SourceTriggerId.Value)) ||
                 (!string.IsNullOrWhiteSpace(rule.SourceCategory) && directByCategory.Contains(rule.SourceCategory));
 
             if (!sourceMatch)
+            {
+                continue;
+            }
+
+            // Skip rules that have no defined target; such rules cannot produce matches.
+            if (!rule.TargetTriggerId.HasValue && string.IsNullOrWhiteSpace(rule.TargetCategory))
             {
                 continue;
             }
@@ -124,9 +136,9 @@ public class MatchingService : IMatchingService
                     Reason = ScanMatchReason.CrossReact,
                     Severity = target.Severity,
                     EvidenceSourceId = rule.EvidenceSourceId,
-                    EvidenceCitationShort = rule.EvidenceSource?.CitationShort,
-                    EvidenceCitationFull = rule.EvidenceSource?.CitationFull,
-                    EvidenceSummary = rule.EvidenceSource?.Summary,
+                    EvidenceCitationShort = rule.EvidenceSource?.CitationShort ?? string.Empty,
+                    EvidenceCitationFull = rule.EvidenceSource?.CitationFull ?? string.Empty,
+                    EvidenceSummary = rule.EvidenceSource?.Summary ?? string.Empty,
                     SourceName = rule.SourceTrigger?.Name ?? rule.SourceCategory,
                     Strength = rule.Strength.ToString()
                 });

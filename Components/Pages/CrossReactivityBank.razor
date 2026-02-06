@@ -19,7 +19,7 @@
                     <div>@rule.EvidenceSource?.CitationShort</div>
                 </div>
                 <div>
-                    <input type="checkbox" checked="@rule.Enabled" @onchange="(e) => ToggleRule(rule, (bool)e.Value!)" /> Enabled
+                    <input type="checkbox" checked="@rule.Enabled" @onchange="(e) => ToggleRule(rule, (bool)(e.Value ?? rule.Enabled))" /> Enabled
                 </div>
             </div>
             <details>
