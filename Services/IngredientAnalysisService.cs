@@ -26,6 +26,13 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         _matchingService = matchingService;
     }
 
+    /// <summary>
+    /// Analyzes ingredients text to detect triggers and cross-reactive matches.
+    /// </summary>
+    /// <param name="ingredients">The ingredient list text to analyze.</param>
+    /// <param name="isFlareMode">If true, escalates Moderate severity findings to AVOID status.</param>
+    /// <param name="flareModeThreshold">DEPRECATED: This parameter is no longer used. Flare mode now uses an all-or-nothing escalation approach (Moderate → AVOID) rather than a threshold-based system. Retained for backward compatibility.</param>
+    /// <returns>Analysis result with safety level, detected triggers, and warnings.</returns>
     public async Task<AnalysisResult> AnalyzeIngredientsAsync(string ingredients, bool isFlareMode, int flareModeThreshold)
     {
         if (string.IsNullOrWhiteSpace(ingredients))
@@ -56,7 +63,9 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         {
             SafetyLevel.Avoid => isFlareMode ? "AVOID - Flare mode escalation active." : "AVOID - High-risk triggers found.",
             SafetyLevel.Caution => "CAUTION - Moderate-risk triggers found.",
-            _ => "SAFE - No mapped triggers found."
+            _ => matched.DirectMatches.Any() || matched.CrossReactiveMatches.Any() 
+                ? "SAFE - Only low-severity triggers detected." 
+                : "SAFE - No mapped triggers found."
         };
 
         return result;

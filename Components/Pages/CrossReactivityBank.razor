@@ -19,7 +19,7 @@
                     <div>@rule.EvidenceSource?.CitationShort</div>
                 </div>
                 <div>
-                    <input type="checkbox" checked="@rule.Enabled" @onchange="(e) => ToggleRule(rule, (bool)e.Value!)" /> Enabled
+                    <input type="checkbox" checked="@rule.Enabled" @onchange="(e) => ToggleRule(rule, (bool)(e.Value ?? rule.Enabled))" /> Enabled
                 </div>
             </div>
             <details>
@@ -42,11 +42,16 @@
         rules = await DatabaseService.GetCrossReactivityRulesAsync();
     }
 
+    /// <summary>
+    /// Filters rules based on the search term. Searches across source category, target category, and evidence citation.
+    /// Null-safe: if any field is null, the null-conditional operator short-circuits to false for that field.
+    /// A rule matches if the search term appears in ANY of the non-null fields.
+    /// </summary>
     private IEnumerable<CrossReactivityRule> FilteredRules => rules.Where(r =>
         string.IsNullOrWhiteSpace(search)
         || (r.SourceCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
         || (r.TargetCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-        || (r.EvidenceSource?.CitationShort.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+        || (r.EvidenceSource?.CitationShort?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
 
     private async Task ToggleRule(CrossReactivityRule rule, bool enabled)
     {
