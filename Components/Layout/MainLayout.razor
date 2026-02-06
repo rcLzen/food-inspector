@@ -1,0 +1,72 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="main">
+        <div class="top-row px-4">
+            <a href="/" class="navbar-brand">Food Inspector</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </div>
+
+    <div class="bottom-nav">
+        <NavLink href="/" Match="NavLinkMatch.All" class="nav-item">
+            <span>Scan</span>
+        </NavLink>
+        <NavLink href="/history" class="nav-item">
+            <span>History</span>
+        </NavLink>
+        <NavLink href="/settings" class="nav-item">
+            <span>Settings</span>
+        </NavLink>
+    </div>
+</div>
+
+<style>
+    .page {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .main {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .top-row {
+        background-color: #512bd4;
+        color: white;
+        padding: 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .navbar-brand {
+        color: white;
+        text-decoration: none;
+    }
+
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        background-color: #f8f9fa;
+        border-top: 1px solid #ddd;
+        padding: 0.5rem;
+    }
+
+    .nav-item {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem;
+        color: #666;
+        text-decoration: none;
+    }
+
+    .nav-item.active {
+        color: #512bd4;
+        font-weight: bold;
+    }
+</style>
