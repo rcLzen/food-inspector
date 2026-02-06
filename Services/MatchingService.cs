@@ -96,6 +96,12 @@ public class MatchingService : IMatchingService
 
         foreach (var rule in rules.Where(x => x.Enabled))
         {
+            // Skip rules that don't have valid source and target definitions
+            if (!IsValidRule(rule))
+            {
+                continue;
+            }
+
             var sourceMatch =
                 (rule.SourceTriggerId.HasValue && directTriggerIds.Contains(rule.SourceTriggerId.Value)) ||
                 (!string.IsNullOrWhiteSpace(rule.SourceCategory) && directByCategory.Contains(rule.SourceCategory));
@@ -124,9 +130,9 @@ public class MatchingService : IMatchingService
                     Reason = ScanMatchReason.CrossReact,
                     Severity = target.Severity,
                     EvidenceSourceId = rule.EvidenceSourceId,
-                    EvidenceCitationShort = rule.EvidenceSource?.CitationShort,
-                    EvidenceCitationFull = rule.EvidenceSource?.CitationFull,
-                    EvidenceSummary = rule.EvidenceSource?.Summary,
+                    EvidenceCitationShort = rule.EvidenceSource?.CitationShort ?? string.Empty,
+                    EvidenceCitationFull = rule.EvidenceSource?.CitationFull ?? string.Empty,
+                    EvidenceSummary = rule.EvidenceSource?.Summary ?? string.Empty,
                     SourceName = rule.SourceTrigger?.Name ?? rule.SourceCategory,
                     Strength = rule.Strength.ToString()
                 });
@@ -168,5 +174,15 @@ public class MatchingService : IMatchingService
         }
 
         return SafetyLevel.Safe;
+    }
+
+    /// <summary>
+    /// Validates that a cross-reactivity rule has at least one non-null source and one non-null target.
+    /// </summary>
+    private static bool IsValidRule(CrossReactivityRule rule)
+    {
+        var hasValidSource = rule.SourceTriggerId.HasValue || !string.IsNullOrWhiteSpace(rule.SourceCategory);
+        var hasValidTarget = rule.TargetTriggerId.HasValue || !string.IsNullOrWhiteSpace(rule.TargetCategory);
+        return hasValidSource && hasValidTarget;
     }
 }

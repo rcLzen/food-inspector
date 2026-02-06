@@ -121,9 +121,23 @@
         loadingMessage = "Analyzing ingredients...";
         StateHasChanged();
 
-        currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode, flareModeThreshold);
-
-        isLoading = false;
+        try
+        {
+            currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode, flareModeThreshold);
+        }
+        catch (Exception ex)
+        {
+            currentResult = new AnalysisResult
+            {
+                SafetyLevel = SafetyLevel.Safe,
+                Summary = $"Error analyzing ingredients: {ex.Message}"
+            };
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 
     private async Task SaveToHistory()
@@ -133,6 +147,9 @@
             return;
         }
 
+        // Create ScanRecord with associated ScanMatch entities
+        // Entity Framework will automatically set ScanRecordId on the ScanMatch entities
+        // when SaveChangesAsync is called, due to the configured relationship.
         var record = new ScanRecord
         {
             CreatedUtc = DateTime.UtcNow,
