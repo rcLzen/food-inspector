@@ -1,5 +1,6 @@
 using FoodInspector.Models;
 using FoodInspector.Services;
+using Xunit;
 
 namespace FoodInspector.Tests;
 

@@ -10,12 +10,12 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="../Models/Models.cs" Link="Models.cs" />
     <Compile Include="../Services/IngredientNormalizationService.cs" Link="IngredientNormalizationService.cs" />
     <Compile Include="../Services/MatchingService.cs" Link="MatchingService.cs" />
-    <Compile Include="MatchingServiceTests.cs" />
   </ItemGroup>
 </Project>
