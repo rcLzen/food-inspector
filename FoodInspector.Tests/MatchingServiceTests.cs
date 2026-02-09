@@ -4,6 +4,7 @@ using Xunit;
 using TriggerModel = FoodInspector.Models.Trigger;
 
 namespace FoodInspector.Tests;
+
 public class MatchingServiceTests
 {
     [Fact]
@@ -35,7 +36,7 @@ public class MatchingServiceTests
         return new MatchingService(new FakeDb(), new IngredientNormalizationService());
     }
 
-    private class FakeDb : IDatabaseService
+    private class FakeDb : FoodInspector.Services.IDatabaseService
     {
         public Task<List<TriggerModel>> GetAllTriggersAsync() => Task.FromResult(new List<TriggerModel>
         {

@@ -92,4 +92,6 @@
     <None Remove="FoodInspector.Tests\**\*" />
   </ItemGroup>
 
+
 </Project>
+

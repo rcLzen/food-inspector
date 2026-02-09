@@ -1,0 +1,345 @@
+[
+  {
+    "sourceCategory": "Legume",
+    "targetCategory": "Legume",
+    "strength": "Medium",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Conservative legume family expansion: peanut/soy/pea/bean/lentil relationships. Immunologic cross-reactivity is common but clinical reactions are less frequent."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Soy",
+    "strength": "Medium",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Peanut and soy share Bet v 1 and 2S albumin homologs. Immunologic cross-reactivity documented; clinical co-allergy is less common than serologic overlap."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Lupin",
+    "strength": "High",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Lupin and peanut show strong cross-reactivity via vicilin and conglutin proteins. European labeling regulations already flag this relationship."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Green Pea",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Low-level immunologic cross-reactivity between peanut and pea. Clinical reactions are infrequent."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Lentil",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Lentil shares some legume allergen families with peanut. Cross-sensitization documented but clinical significance variable."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Chickpea",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Chickpea-peanut immunologic overlap has been reported. Clinical co-allergy is less common."
+  },
+  {
+    "sourceTrigger": "Soy",
+    "targetTrigger": "Green Pea",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Soy and pea share legume allergen structures. Clinical cross-reactivity is infrequent."
+  },
+  {
+    "sourceTrigger": "Soy",
+    "targetTrigger": "Lentil",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Low immunologic overlap between soy and lentil through shared legume protein families."
+  },
+  {
+    "sourceCategory": "CerealGrain",
+    "targetCategory": "CerealGrain",
+    "strength": "Medium",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Immunologic cross-reactivity among wheat, barley, rye, oat, and related cereal grains demonstrated. Clinical relevance varies by individual."
+  },
+  {
+    "sourceTrigger": "Wheat",
+    "targetTrigger": "Barley",
+    "strength": "Medium",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Wheat-barley cross-reactivity via shared prolamins (gliadin/hordein). Serologic overlap is well-documented."
+  },
+  {
+    "sourceTrigger": "Wheat",
+    "targetTrigger": "Rye",
+    "strength": "Medium",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Wheat-rye cross-reactivity via shared prolamin structures (gliadin/secalin). High serologic overlap."
+  },
+  {
+    "sourceTrigger": "Wheat",
+    "targetTrigger": "Oat",
+    "strength": "Low",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Oat avenin has partial homology with wheat gliadin. Cross-reactivity is immunologically possible but clinical significance is debated; many celiac patients tolerate oats."
+  },
+  {
+    "sourceTrigger": "Wheat",
+    "targetTrigger": "Spelt",
+    "strength": "High",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Spelt is a wheat species (Triticum spelta). Very high protein homology; cross-reactivity is expected."
+  },
+  {
+    "sourceTrigger": "Wheat",
+    "targetTrigger": "Kamut",
+    "strength": "High",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Kamut (Khorasan wheat) is a wheat relative. High protein homology with common wheat."
+  },
+  {
+    "sourceTrigger": "Wheat",
+    "targetTrigger": "Triticale",
+    "strength": "High",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Triticale is a wheat-rye hybrid. Contains prolamins from both parents."
+  },
+  {
+    "sourceTrigger": "Barley",
+    "targetTrigger": "Rye",
+    "strength": "Medium",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Barley hordein and rye secalin share structural homology. Cross-reactivity documented serologically."
+  },
+  {
+    "sourceTrigger": "Barley",
+    "targetTrigger": "Malt",
+    "strength": "High",
+    "evidenceCitationShort": "Jones et al. 1995",
+    "notes": "Malt is typically produced from barley. Contains barley prolamins; effectively the same allergen source."
+  },
+  {
+    "sourceTrigger": "Gluten",
+    "targetTrigger": "Wheat",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Gluten is the primary allergenic protein complex in wheat. Direct compositional relationship."
+  },
+  {
+    "sourceTrigger": "Gluten",
+    "targetTrigger": "Barley",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Barley hordein is a gluten-related protein. Relevant for gluten-sensitive individuals."
+  },
+  {
+    "sourceTrigger": "Gluten",
+    "targetTrigger": "Rye",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Rye secalin is a gluten-related protein. Relevant for gluten-sensitive individuals."
+  },
+  {
+    "sourceCategory": "Fungi",
+    "targetCategory": "Fungi",
+    "strength": "Medium",
+    "evidenceCitationShort": "Xing et al. 2022",
+    "notes": "Fungal allergens share conserved enzyme structures. Yeast, Aspergillus, Candida, and mushroom cross-reactivity documented via shared enolase and manganese superoxide dismutase epitopes."
+  },
+  {
+    "sourceTrigger": "Yeast",
+    "targetTrigger": "Aspergillus",
+    "strength": "Medium",
+    "evidenceCitationShort": "Xing et al. 2022",
+    "notes": "Yeast (Saccharomyces) and Aspergillus share conserved enolase and MnSOD allergens. Cross-sensitization has been documented."
+  },
+  {
+    "sourceTrigger": "Yeast",
+    "targetTrigger": "Candida",
+    "strength": "Medium",
+    "evidenceCitationShort": "Xing et al. 2022",
+    "notes": "Saccharomyces and Candida are closely related yeast genera. Cross-reactivity through shared allergen structures is expected."
+  },
+  {
+    "sourceTrigger": "Yeast",
+    "targetTrigger": "Mushroom",
+    "strength": "Low",
+    "evidenceCitationShort": "Xing et al. 2022",
+    "notes": "Yeast-mushroom cross-reactivity is possible via shared fungal allergens, but clinical significance is lower than within yeast genera."
+  },
+  {
+    "sourceTrigger": "Aspergillus",
+    "targetTrigger": "Mushroom",
+    "strength": "Low",
+    "evidenceCitationShort": "Xing et al. 2022",
+    "notes": "Aspergillus mold and mushroom share some fungal allergen families. Clinical cross-reactivity is possible but not well-characterized."
+  },
+  {
+    "sourceCategory": "TreeNut",
+    "targetCategory": "TreeNut",
+    "strength": "Medium",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Tree nut cross-reactivity varies by nut pair. Cashew-pistachio and walnut-pecan pairs show the strongest clinical cross-reactivity."
+  },
+  {
+    "sourceTrigger": "Cashew",
+    "targetTrigger": "Pistachio",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Cashew and pistachio are in the Anacardiaceae family. Very high clinical cross-reactivity (~50% co-allergy rate) is well-documented."
+  },
+  {
+    "sourceTrigger": "Walnut",
+    "targetTrigger": "Pecan",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Walnut and pecan are in the Juglandaceae family. High clinical cross-reactivity documented."
+  },
+  {
+    "sourceTrigger": "Almond",
+    "targetTrigger": "Hazelnut",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Almond-hazelnut immunologic cross-reactivity exists via PR-10 proteins. Clinical co-allergy is less common than serologic overlap."
+  },
+  {
+    "sourceTrigger": "Almond",
+    "targetTrigger": "Walnut",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Lower cross-reactivity between almond and walnut compared to walnut-pecan. Shared 2S albumin epitopes may be involved."
+  },
+  {
+    "sourceCategory": "Dairy",
+    "targetCategory": "Dairy",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Dairy proteins (casein, whey, lactoglobulin) are from the same source. Co-reactivity within dairy is expected rather than cross-reactivity."
+  },
+  {
+    "sourceCategory": "Shellfish",
+    "targetCategory": "Shellfish",
+    "strength": "Medium",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Crustacean tropomyosin is the major cross-reactive allergen. Shrimp, crab, and lobster show strongest cross-reactivity. Mollusk cross-reactivity with crustaceans is lower."
+  },
+  {
+    "sourceTrigger": "Shrimp",
+    "targetTrigger": "Crab",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Shrimp and crab tropomyosins share >80% sequence identity. Very high clinical cross-reactivity."
+  },
+  {
+    "sourceTrigger": "Shrimp",
+    "targetTrigger": "Lobster",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Crustacean tropomyosin cross-reactivity between shrimp and lobster is well-established."
+  },
+  {
+    "sourceTrigger": "Shrimp",
+    "targetTrigger": "Mussel",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Crustacean-mollusk tropomyosin cross-reactivity exists but at lower clinical rates than within crustaceans."
+  },
+  {
+    "sourceTrigger": "Shrimp",
+    "targetTrigger": "Oyster",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Shrimp-oyster cross-reactivity via tropomyosin is immunologically demonstrated but clinical co-allergy rates are lower."
+  },
+  {
+    "sourceTrigger": "Shrimp",
+    "targetTrigger": "Squid",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Squid tropomyosin shows partial homology with crustacean tropomyosin. Clinical significance is variable."
+  },
+  {
+    "sourceCategory": "Fish",
+    "targetCategory": "Fish",
+    "strength": "Medium",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Parvalbumin is the major cross-reactive fish allergen. Cross-reactivity is common among bony fish species, though clinical tolerance of individual species is possible."
+  },
+  {
+    "sourceTrigger": "Cod",
+    "targetTrigger": "Salmon",
+    "strength": "Medium",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Cod and salmon parvalbumins show immunologic cross-reactivity. Some patients tolerate one but not the other."
+  },
+  {
+    "sourceTrigger": "Cod",
+    "targetTrigger": "Tuna",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Tuna parvalbumin has lower homology to cod parvalbumin. Some fish-allergic patients tolerate tuna."
+  },
+  {
+    "sourceCategory": "Seed",
+    "targetCategory": "Seed",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Seed allergens share some 2S albumin and LTP structures. Cross-reactivity between sesame, mustard, and other seeds is immunologically possible but clinical data is limited."
+  },
+  {
+    "sourceTrigger": "Sesame",
+    "targetTrigger": "Mustard",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Sesame and mustard share 2S albumin allergens. Clinical cross-reactivity has been reported in some populations."
+  },
+  {
+    "sourceCategory": "Apiaceae",
+    "targetCategory": "Apiaceae",
+    "strength": "Medium",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Celery and carrot are in the Apiaceae family and share PR-10 and LTP allergens. Cross-reactivity is part of the celery-birch-mugwort-spice syndrome."
+  },
+  {
+    "sourceTrigger": "Celery",
+    "targetTrigger": "Carrot",
+    "strength": "Medium",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Celery-carrot cross-reactivity via Api g 1 and Dau c 1 (PR-10 family). Well-characterized in birch pollen-allergic populations."
+  },
+  {
+    "sourceTrigger": "Egg",
+    "targetCategory": "Egg",
+    "strength": "High",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Egg white and egg yolk proteins can cross-react. Most egg-allergic patients react to egg white proteins (ovomucoid, ovalbumin)."
+  },
+  {
+    "sourceCategory": "Legume",
+    "targetCategory": "TreeNut",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Peanut (a legume) and tree nuts share some 2S albumin and vicilin-like structures. Clinical co-allergy occurs (~25-40% of peanut-allergic patients also react to tree nuts) but true immunologic cross-reactivity vs co-sensitization is debated."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Almond",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Peanut-almond immunologic cross-reactivity via PR-10 and 2S albumin families has been demonstrated. Clinical co-allergy is variable."
+  },
+  {
+    "sourceTrigger": "Peanut",
+    "targetTrigger": "Hazelnut",
+    "strength": "Low",
+    "evidenceCitationShort": "Bublin & Breiteneder 2014",
+    "notes": "Peanut-hazelnut co-sensitization is common but true cross-reactivity vs independent sensitization is not fully resolved."
+  },
+  {
+    "sourceTrigger": "Coconut",
+    "targetCategory": "TreeNut",
+    "strength": "Low",
+    "evidenceCitationShort": "Cox et al. 2021",
+    "notes": "Coconut is botanically a drupe, not a tree nut. Cross-reactivity with tree nuts is very rare but has been reported. FDA classifies coconut as a tree nut for labeling purposes."
+  }
+]

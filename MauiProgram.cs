@@ -31,6 +31,7 @@ public static class MauiProgram
 
         // Register services
         builder.Services.AddSingleton<ISecureStorageService, SecureStorageService>();
+        builder.Services.AddSingleton<ISeedDataService, SeedDataService>();
         builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
         builder.Services.AddSingleton<IBarcodeScannerService, BarcodeScannerService>();
         builder.Services.AddSingleton<IOcrService, OcrService>();

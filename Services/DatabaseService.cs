@@ -3,6 +3,7 @@ using FoodInspector.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodInspector.Services;
+
 public interface IDatabaseService
 {
     Task InitializeDatabaseAsync();
@@ -16,15 +17,21 @@ public interface IDatabaseService
     Task DeleteScanHistoryAsync(int id);
     Task ToggleCrossReactivityRuleAsync(int id, bool enabled);
 }
+
 public class DatabaseService : IDatabaseService
 {
     private readonly FoodInspectorDbContext _context;
     private readonly ISecureStorageService _secureStorage;
+    private readonly ISeedDataService _seedDataService;
 
-    public DatabaseService(FoodInspectorDbContext context, ISecureStorageService secureStorage)
+    public DatabaseService(
+        FoodInspectorDbContext context,
+        ISecureStorageService secureStorage,
+        ISeedDataService seedDataService)
     {
         _context = context;
         _secureStorage = secureStorage;
+        _seedDataService = seedDataService;
     }
 
     public async Task InitializeDatabaseAsync()
@@ -33,10 +40,12 @@ public class DatabaseService : IDatabaseService
         {
             // Get encryption key
             var key = await _secureStorage.GetEncryptionKeyAsync();
-            
+
             // Ensure database is created with schema
-            // Use EnsureCreated instead of Migrate for MAUI apps
             await _context.Database.EnsureCreatedAsync();
+
+            // Run idempotent seed from JSON resources
+            await _seedDataService.SeedAsync(_context);
         }
         catch (Exception ex)
         {
