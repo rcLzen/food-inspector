@@ -3,13 +3,12 @@ using FoodInspector.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodInspector.Services;
-
 public interface IDatabaseService
 {
     Task InitializeDatabaseAsync();
     Task<List<ScanRecord>> GetScanHistoryAsync();
     Task<ScanRecord> SaveScanHistoryAsync(ScanRecord scan);
-    Task<List<Trigger>> GetAllTriggersAsync();
+    Task<List<Models.Trigger>> GetAllTriggersAsync();
     Task<List<TriggerSynonym>> GetAllSynonymsAsync();
     Task<List<CrossReactivityRule>> GetCrossReactivityRulesAsync();
     Task<AppSettings> GetSettingsAsync();
@@ -17,7 +16,6 @@ public interface IDatabaseService
     Task DeleteScanHistoryAsync(int id);
     Task ToggleCrossReactivityRuleAsync(int id, bool enabled);
 }
-
 public class DatabaseService : IDatabaseService
 {
     private readonly FoodInspectorDbContext _context;
@@ -70,7 +68,7 @@ public class DatabaseService : IDatabaseService
         return scan;
     }
 
-    public Task<List<Trigger>> GetAllTriggersAsync() =>
+    public Task<List<Models.Trigger>> GetAllTriggersAsync() =>
         _context.Triggers.Where(x => x.Enabled).ToListAsync();
 
     public async Task<List<TriggerSynonym>> GetAllSynonymsAsync()

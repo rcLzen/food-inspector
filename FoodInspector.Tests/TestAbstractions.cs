@@ -1,13 +1,13 @@
 using FoodInspector.Models;
 
-namespace FoodInspector.Services;
+namespace FoodInspector.Tests;
 
 public interface IDatabaseService
 {
     Task InitializeDatabaseAsync();
     Task<List<ScanRecord>> GetScanHistoryAsync();
     Task<ScanRecord> SaveScanHistoryAsync(ScanRecord scan);
-    Task<List<Trigger>> GetAllTriggersAsync();
+    Task<List<Models.Trigger>> GetAllTriggersAsync();
     Task<List<TriggerSynonym>> GetAllSynonymsAsync();
     Task<List<CrossReactivityRule>> GetCrossReactivityRulesAsync();
     Task<AppSettings> GetSettingsAsync();

@@ -1,11 +1,12 @@
 using FoodInspector.Models;
 using Microsoft.EntityFrameworkCore;
+using TriggerModel = FoodInspector.Models.Trigger;
 
 namespace FoodInspector.Data;
 
 public class FoodInspectorDbContext : DbContext
 {
-    public DbSet<Trigger> Triggers { get; set; }
+    public DbSet<Models.Trigger> Triggers { get; set; }
     public DbSet<TriggerSynonym> TriggerSynonyms { get; set; }
     public DbSet<EvidenceSource> EvidenceSources { get; set; }
     public DbSet<CrossReactivityRule> CrossReactivityRules { get; set; }
@@ -73,18 +74,18 @@ public class FoodInspectorDbContext : DbContext
 
     private static void SeedData(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Trigger>().HasData(
-            new Trigger { Id = 1, Name = "Gluten", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 2, Name = "Wheat", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 3, Name = "Malt", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 4, Name = "Soy", Category = "Legume", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 5, Name = "Dairy Proteins", Category = "Dairy", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 6, Name = "Tree Nuts", Category = "Nut", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 7, Name = "Canola Oil", Category = "Seed Oil", Severity = TriggerSeverity.High, Enabled = true },
-            new Trigger { Id = 8, Name = "Yeast Extract", Category = "Fungi/Yeast", Severity = TriggerSeverity.Moderate, Enabled = true },
-            new Trigger { Id = 9, Name = "Fungi/Yeast", Category = "Fungi/Yeast", Severity = TriggerSeverity.Moderate, Enabled = true },
-            new Trigger { Id = 10, Name = "Legumes", Category = "Legume", Severity = TriggerSeverity.Moderate, Enabled = true },
-            new Trigger { Id = 11, Name = "Potato/Nightshade", Category = "Nightshade", Severity = TriggerSeverity.Moderate, Enabled = true });
+        modelBuilder.Entity<TriggerModel>().HasData(
+            new TriggerModel { Id = 1, Name = "Gluten", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 2, Name = "Wheat", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 3, Name = "Malt", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 4, Name = "Soy", Category = "Legume", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 5, Name = "Dairy Proteins", Category = "Dairy", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 6, Name = "Tree Nuts", Category = "Nut", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 7, Name = "Canola Oil", Category = "Seed Oil", Severity = TriggerSeverity.High, Enabled = true },
+            new TriggerModel { Id = 8, Name = "Yeast Extract", Category = "Fungi/Yeast", Severity = TriggerSeverity.Moderate, Enabled = true },
+            new TriggerModel { Id = 9, Name = "Fungi/Yeast", Category = "Fungi/Yeast", Severity = TriggerSeverity.Moderate, Enabled = true },
+            new TriggerModel { Id = 10, Name = "Legumes", Category = "Legume", Severity = TriggerSeverity.Moderate, Enabled = true },
+            new TriggerModel { Id = 11, Name = "Potato/Nightshade", Category = "Nightshade", Severity = TriggerSeverity.Moderate, Enabled = true });
 
         modelBuilder.Entity<TriggerSynonym>().HasData(
             new TriggerSynonym { Id = 1, TriggerId = 1, SynonymText = "gliadin", MatchType = TriggerMatchType.WordBoundaryContains },

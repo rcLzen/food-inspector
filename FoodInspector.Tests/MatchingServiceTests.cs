@@ -1,6 +1,9 @@
 using FoodInspector.Models;
 using FoodInspector.Services;
+using Xunit;
+using TriggerModel = FoodInspector.Models.Trigger;
 
+namespace FoodInspector.Tests;
 public class MatchingServiceTests
 {
     [Fact]
@@ -34,7 +37,7 @@ public class MatchingServiceTests
 
     private class FakeDb : IDatabaseService
     {
-        public Task<List<Trigger>> GetAllTriggersAsync() => Task.FromResult(new List<Trigger>
+        public Task<List<TriggerModel>> GetAllTriggersAsync() => Task.FromResult(new List<TriggerModel>
         {
             new() { Id = 3, Name = "Malt", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true },
             new() { Id = 4, Name = "Soy", Category = "Legume", Severity = TriggerSeverity.High, Enabled = true },
@@ -44,9 +47,9 @@ public class MatchingServiceTests
 
         public Task<List<TriggerSynonym>> GetAllSynonymsAsync() => Task.FromResult(new List<TriggerSynonym>
         {
-            new() { Id = 1, TriggerId = 3, SynonymText = "malt", MatchType = TriggerMatchType.WordBoundaryContains, Trigger = new Trigger { Id = 3, Name = "Malt", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true } },
-            new() { Id = 2, TriggerId = 4, SynonymText = "soy", MatchType = TriggerMatchType.WordBoundaryContains, Trigger = new Trigger { Id = 4, Name = "Soy", Category = "Legume", Severity = TriggerSeverity.High, Enabled = true } },
-            new() { Id = 3, TriggerId = 8, SynonymText = "yeast extract", MatchType = TriggerMatchType.WordBoundaryContains, Trigger = new Trigger { Id = 8, Name = "Yeast Extract", Category = "Fungi/Yeast", Severity = TriggerSeverity.Moderate, Enabled = true } }
+            new() { Id = 1, TriggerId = 3, SynonymText = "malt", MatchType = TriggerMatchType.WordBoundaryContains, Trigger = new TriggerModel { Id = 3, Name = "Malt", Category = "Cereal", Severity = TriggerSeverity.High, Enabled = true } },
+            new() { Id = 2, TriggerId = 4, SynonymText = "soy", MatchType = TriggerMatchType.WordBoundaryContains, Trigger = new TriggerModel { Id = 4, Name = "Soy", Category = "Legume", Severity = TriggerSeverity.High, Enabled = true } },
+            new() { Id = 3, TriggerId = 8, SynonymText = "yeast extract", MatchType = TriggerMatchType.WordBoundaryContains, Trigger = new TriggerModel { Id = 8, Name = "Yeast Extract", Category = "Fungi/Yeast", Severity = TriggerSeverity.Moderate, Enabled = true } }
         });
 
         public Task<List<CrossReactivityRule>> GetCrossReactivityRulesAsync() => Task.FromResult(new List<CrossReactivityRule>
