@@ -28,11 +28,15 @@ public class MatchResult
 
 public interface IMatchingService
 {
-    Task<MatchResult> MatchAsync(string ingredients, bool flareModeOn);
+    Task<MatchResult> MatchAsync(string ingredients, bool flareModeOn, int flareModeThreshold);
 }
 
 public class MatchingService : IMatchingService
 {
+    private const int StrictThreshold = 0;
+    private const int DefaultThreshold = 1;
+    private const int LenientThreshold = 2;
+
     private readonly IDatabaseService _databaseService;
     private readonly IIngredientNormalizationService _normalizationService;
 
@@ -42,7 +46,7 @@ public class MatchingService : IMatchingService
         _normalizationService = normalizationService;
     }
 
-    public async Task<MatchResult> MatchAsync(string ingredients, bool flareModeOn)
+    public async Task<MatchResult> MatchAsync(string ingredients, bool flareModeOn, int flareModeThreshold)
     {
         var result = new MatchResult();
         var tokens = _normalizationService.Tokenize(ingredients);
@@ -137,7 +141,7 @@ public class MatchingService : IMatchingService
         var allSeverities = result.DirectMatches.Select(x => x.Severity)
             .Concat(result.CrossReactiveMatches.Select(x => x.Severity));
 
-        result.FinalStatus = ComputeFinalStatus(allSeverities, flareModeOn);
+        result.FinalStatus = ComputeFinalStatus(allSeverities, flareModeOn, flareModeThreshold);
         return result;
     }
 
@@ -151,21 +155,34 @@ public class MatchingService : IMatchingService
         };
     }
 
-    private static SafetyLevel ComputeFinalStatus(IEnumerable<TriggerSeverity> severities, bool flareModeOn)
+    private static SafetyLevel ComputeFinalStatus(IEnumerable<TriggerSeverity> severities, bool flareModeOn, int flareModeThreshold)
     {
-        if (!severities.Any())
+        var severityList = severities as ICollection<TriggerSeverity> ?? severities.ToList();
+        if (!severityList.Any())
         {
             return SafetyLevel.Safe;
         }
 
-        if (severities.Any(x => x == TriggerSeverity.High))
+        if (severityList.Any(x => x == TriggerSeverity.High))
         {
             return SafetyLevel.Avoid;
         }
 
-        if (severities.Any(x => x == TriggerSeverity.Moderate))
+        if (severityList.Any(x => x == TriggerSeverity.Moderate))
         {
-            return flareModeOn ? SafetyLevel.Avoid : SafetyLevel.Caution;
+            // flareModeThreshold: 0 = Strict (Moderate -> AVOID), 1 = Default (Moderate -> CAUTION), 2 = Lenient (Moderate -> SAFE).
+            if (!flareModeOn)
+            {
+                return SafetyLevel.Caution;
+            }
+
+            return flareModeThreshold switch
+            {
+                StrictThreshold => SafetyLevel.Avoid,
+                DefaultThreshold => SafetyLevel.Caution,
+                LenientThreshold => SafetyLevel.Safe,
+                _ => SafetyLevel.Caution
+            };
         }
 
         return SafetyLevel.Safe;

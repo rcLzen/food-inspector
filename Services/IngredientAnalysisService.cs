@@ -37,7 +37,7 @@ public class IngredientAnalysisService : IIngredientAnalysisService
             };
         }
 
-        var matched = await _matchingService.MatchAsync(ingredients, isFlareMode);
+        var matched = await _matchingService.MatchAsync(ingredients, isFlareMode, flareModeThreshold);
         var result = new AnalysisResult
         {
             SafetyLevel = matched.FinalStatus,
