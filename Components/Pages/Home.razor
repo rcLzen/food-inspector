@@ -1,6 +1,4 @@
 @page "/"
-@using FoodInspector.Services
-@using FoodInspector.Models
 @inject IBarcodeScannerService BarcodeScanner
 @inject IOcrService OcrService
 @inject IOpenFoodFactsService OpenFoodFacts
@@ -8,84 +6,167 @@
 @inject IDatabaseService DatabaseService
 @inject ISettingsService SettingsService
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 <PageTitle>Scan - Food Inspector</PageTitle>
 
-<div class="page-container">
-    <h1>Food Safety Scanner</h1>
+@if (isFlareMode)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mb-4" Icon="@Icons.Material.Filled.LocalFireDepartment">
+        <MudText Typo="Typo.body1"><strong>Flare Mode Active</strong> - Moderate findings escalate to AVOID.</MudText>
+    </MudAlert>
+}
 
-    @if (isFlareMode)
-    {
-        <div class="alert alert-danger">
-            <strong>🔥 Flare Mode Active</strong> - Moderate findings escalate to AVOID.
-        </div>
-    }
+@if (isLoading)
+{
+    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height: 300px;">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+        <MudText Typo="Typo.body1" Color="Color.Secondary">@loadingMessage</MudText>
+    </MudStack>
+}
+else if (currentResult != null)
+{
+    <MudCard Elevation="3" Class="mb-4" Style="@GetSafetyCardStyle(currentResult.SafetyLevel)">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@GetSafetyIcon(currentResult.SafetyLevel)" Size="Size.Large" />
+                    <MudText Typo="Typo.h4">@GetSafetyLevelText(currentResult.SafetyLevel)</MudText>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.body1" Class="mb-4">@currentResult.Summary</MudText>
 
-    @if (isLoading)
-    {
-        <div class="text-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p>@loadingMessage</p>
-        </div>
-    }
-    else if (currentResult != null)
-    {
-        <div class="@GetSafetyCardClass(currentResult.SafetyLevel)">
-            <h2>@GetSafetyLevelText(currentResult.SafetyLevel)</h2>
-            <p><strong>@currentResult.Summary</strong></p>
-
-            <h4>Direct matches</h4>
-            @if (currentResult.DirectMatches.Any())
-            {
-                <ul>
-                    @foreach (var match in currentResult.DirectMatches)
+            <MudExpansionPanels MultiExpansion="true">
+                <MudExpansionPanel Text="@($"Direct Matches ({currentResult.DirectMatches.Count()})")" 
+                                   Icon="@Icons.Material.Filled.Warning"
+                                   @bind-Expanded="directMatchesExpanded">
+                    @if (currentResult.DirectMatches.Any())
                     {
-                        <li>@match.TriggerName (@match.Reason) from "@match.MatchedText"</li>
+                        <MudList T="string" Dense="true">
+                            @foreach (var match in currentResult.DirectMatches)
+                            {
+                                <MudListItem Icon="@Icons.Material.Filled.Circle" IconColor="Color.Error">
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.body1"><strong>@match.TriggerName</strong></MudText>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            @match.Reason - found "@match.MatchedText"
+                                        </MudText>
+                                    </MudStack>
+                                </MudListItem>
+                            }
+                        </MudList>
                     }
-                </ul>
-            }
-            else
-            {
-                <p>No direct matches.</p>
-            }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">No direct matches found.</MudText>
+                    }
+                </MudExpansionPanel>
 
-            <h4>Cross-reactive matches</h4>
-            @if (currentResult.CrossReactiveMatches.Any())
-            {
-                @foreach (var match in currentResult.CrossReactiveMatches)
-                {
-                    <details class="mb-2">
-                        <summary>@match.SourceName → @match.TriggerName (@match.Strength) - @match.EvidenceCitationShort</summary>
-                        <div><strong>Citation:</strong> @match.EvidenceCitationFull</div>
-                        <div><strong>Summary:</strong> @match.EvidenceSummary</div>
-                    </details>
-                }
-            }
-            else
-            {
-                <p>No cross-reactive expansions.</p>
-            }
+                <MudExpansionPanel Text="@($"Cross-Reactive Matches ({currentResult.CrossReactiveMatches.Count()})")"
+                                   Icon="@Icons.Material.Filled.Share">
+                    @if (currentResult.CrossReactiveMatches.Any())
+                    {
+                        @foreach (var match in currentResult.CrossReactiveMatches)
+                        {
+                            <MudCard Outlined="true" Class="mb-2">
+                                <MudCardContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudChip T="string" Color="Color.Primary" Size="Size.Small">@match.SourceName</MudChip>
+                                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
+                                        <MudChip T="string" Color="Color.Secondary" Size="Size.Small">@match.TriggerName</MudChip>
+                                        <MudChip T="string" Color="@GetStrengthColor(match.Strength)" Size="Size.Small" Variant="Variant.Outlined">
+                                            @match.Strength
+                                        </MudChip>
+                                    </MudStack>
+                                    <MudText Typo="Typo.caption" Class="mt-2">@match.EvidenceCitationShort</MudText>
+                                    <MudCollapse @bind-Expanded="@match.IsExpanded">
+                                        <MudText Typo="Typo.body2" Class="mt-2"><strong>Citation:</strong> @match.EvidenceCitationFull</MudText>
+                                        <MudText Typo="Typo.body2"><strong>Summary:</strong> @match.EvidenceSummary</MudText>
+                                    </MudCollapse>
+                                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@(() => match.IsExpanded = !match.IsExpanded)">
+                                        @(match.IsExpanded ? "Show Less" : "Show More")
+                                    </MudButton>
+                                </MudCardContent>
+                            </MudCard>
+                        }
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">No cross-reactive expansions.</MudText>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveToHistory">
+                Save to History
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.Refresh" OnClick="Reset">
+                New Scan
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+else
+{
+    <MudText Typo="Typo.h5" Class="mb-4">Food Safety Scanner</MudText>
+    
+    <MudTextField T="string" 
+                  @bind-Value="ingredientsText"
+                  Label="Enter Ingredients"
+                  Placeholder="Enter ingredients manually or use scanning options below..."
+                  Variant="Variant.Outlined"
+                  Lines="5"
+                  Class="mb-4"
+                  FullWidth="true" />
 
-            <button class="btn btn-primary mt-3" @onclick="SaveToHistory">Save to History</button>
-            <button class="btn btn-secondary mt-3" @onclick="Reset">New Scan</button>
-        </div>
-    }
-    else
-    {
-        <div class="mb-3">
-            <label for="ingredientsInput" class="form-label">Enter Ingredients:</label>
-            <textarea class="form-control" id="ingredientsInput" rows="5"
-                      @bind="ingredientsText"
-                      placeholder="Enter ingredients manually or use scanning options below..."></textarea>
-        </div>
+    <MudStack Spacing="3">
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.QrCodeScanner"
+                   FullWidth="true"
+                   Size="Size.Large"
+                   OnClick="ScanBarcode">
+            Scan Barcode
+        </MudButton>
+        
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Info" 
+                   StartIcon="@Icons.Material.Filled.DocumentScanner"
+                   FullWidth="true"
+                   Size="Size.Large"
+                   OnClick="ScanIngredients">
+            Scan Ingredients (OCR)
+        </MudButton>
+        
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Success" 
+                   StartIcon="@Icons.Material.Filled.Search"
+                   FullWidth="true"
+                   Size="Size.Large"
+                   OnClick="AnalyzeManual"
+                   Disabled="@string.IsNullOrWhiteSpace(ingredientsText)">
+            Analyze Ingredients
+        </MudButton>
+    </MudStack>
 
-        <button class="btn btn-primary scan-button" @onclick="ScanBarcode">📷 Scan Barcode</button>
-        <button class="btn btn-info scan-button" @onclick="ScanIngredients">📸 Scan Ingredients (OCR)</button>
-        <button class="btn btn-success scan-button" @onclick="AnalyzeManual">🔍 Analyze Ingredients</button>
-    }
-</div>
+    <MudDivider Class="my-6" />
+
+    <MudText Typo="Typo.h6" Class="mb-3">Quick Tips</MudText>
+    <MudStack Spacing="2">
+        <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
+            Use barcode scanning for pre-packaged foods to automatically fetch ingredients.
+        </MudAlert>
+        <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
+            OCR scanning works best with clear, well-lit ingredient labels.
+        </MudAlert>
+        <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
+            Enable Flare Mode in Settings during sensitive periods.
+        </MudAlert>
+    </MudStack>
+}
 
 @code {
     private string ingredientsText = "";
@@ -104,8 +185,17 @@
         flareModeThreshold = await SettingsService.GetFlareModeThresholdAsync();
     }
 
-    private async Task ScanBarcode() { await Task.CompletedTask; }
-    private async Task ScanIngredients() { await Task.CompletedTask; }
+    private async Task ScanBarcode() 
+    { 
+        Snackbar.Add("Barcode scanning requires device camera access", Severity.Info);
+        await Task.CompletedTask; 
+    }
+    
+    private async Task ScanIngredients() 
+    { 
+        Snackbar.Add("OCR scanning requires device camera access", Severity.Info);
+        await Task.CompletedTask; 
+    }
 
     private async Task AnalyzeManual()
     {
@@ -155,6 +245,7 @@
         };
 
         await DatabaseService.SaveScanHistoryAsync(record);
+        Snackbar.Add("Saved to history!", Severity.Success);
         Navigation.NavigateTo("/history");
     }
 
@@ -166,19 +257,37 @@
         currentResult = null;
     }
 
-    private static string GetSafetyCardClass(SafetyLevel level) => level switch
+    private static string GetSafetyCardStyle(SafetyLevel level) => level switch
     {
-        SafetyLevel.Safe => "safety-card safety-safe",
-        SafetyLevel.Caution => "safety-card safety-caution",
-        SafetyLevel.Avoid => "safety-card safety-avoid",
-        _ => "safety-card"
+        SafetyLevel.Safe => "border-left: 4px solid #22C55E; background: linear-gradient(to right, #F0FDF4, white);",
+        SafetyLevel.Caution => "border-left: 4px solid #F59E0B; background: linear-gradient(to right, #FFFBEB, white);",
+        SafetyLevel.Avoid => "border-left: 4px solid #EF4444; background: linear-gradient(to right, #FEF2F2, white);",
+        _ => ""
+    };
+
+    private static string GetSafetyIcon(SafetyLevel level) => level switch
+    {
+        SafetyLevel.Safe => Icons.Material.Filled.CheckCircle,
+        SafetyLevel.Caution => Icons.Material.Filled.Warning,
+        SafetyLevel.Avoid => Icons.Material.Filled.Dangerous,
+        _ => Icons.Material.Filled.Help
     };
 
     private static string GetSafetyLevelText(SafetyLevel level) => level switch
     {
-        SafetyLevel.Safe => "✅ SAFE",
-        SafetyLevel.Caution => "⚠️ CAUTION",
-        SafetyLevel.Avoid => "🚫 AVOID",
+        SafetyLevel.Safe => "SAFE",
+        SafetyLevel.Caution => "CAUTION",
+        SafetyLevel.Avoid => "AVOID",
         _ => "UNKNOWN"
     };
+
+    private static Color GetStrengthColor(string? strength) => strength switch
+    {
+        "High" => Color.Error,
+        "Medium" => Color.Warning,
+        "Low" => Color.Success,
+        _ => Color.Default
+    };
+
+    private bool directMatchesExpanded = true;
 }

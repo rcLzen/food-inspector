@@ -1,78 +1,105 @@
-body {
+/* Food Inspector - Custom Styles for MudBlazor */
+
+html, body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    background-color: #F9FAFB;
 }
 
 .status-bar-safe-area {
     padding-top: env(safe-area-inset-top);
+    background-color: #7C3AED;
 }
 
 #blazor-error-ui {
-    background: lightyellow;
+    background: #FEF2F2;
+    border-top: 2px solid #EF4444;
     bottom: 0;
-    box-shadow: 0 -1px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
     display: none;
     left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    padding: 0.75rem 1.5rem;
     position: fixed;
     width: 100%;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 #blazor-error-ui .dismiss {
     cursor: pointer;
     position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
+    right: 1rem;
+    top: 0.75rem;
 }
 
-.page-container {
-    padding: 1rem;
+/* MudBlazor overrides for mobile-friendly bottom nav */
+.mud-appbar-bottom {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
 }
 
-.safety-card {
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+/* Safe area for bottom navigation */
+.mud-main-content {
+    padding-bottom: 80px !important;
 }
 
-.safety-safe {
-    background-color: #d4edda;
-    border: 2px solid #28a745;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-.safety-caution {
-    background-color: #fff3cd;
-    border: 2px solid #ffc107;
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 
-.safety-avoid {
-    background-color: #f8d7da;
-    border: 2px solid #dc3545;
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
 }
 
-.scan-button {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.2rem;
-    border-radius: 10px;
-    margin: 0.5rem 0;
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
 }
 
-.history-item {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 1rem;
-    margin: 0.5rem 0;
+/* Animation for cards */
+.mud-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.flare-mode-badge {
-    background-color: #dc3545;
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    margin-left: 0.5rem;
+.mud-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Disabled card state */
+.mud-card-disabled {
+    pointer-events: auto;
+}
+
+/* Custom chip styles */
+.mud-chip {
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .mud-appbar .mud-typography-h6 {
+        font-size: 1rem;
+    }
+    
+    .mud-main-content {
+        padding: 8px !important;
+        padding-bottom: 80px !important;
+    }
+}
+
+/* Loading animation enhancement */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
 }

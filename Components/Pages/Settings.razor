@@ -1,97 +1,156 @@
 @page "/settings"
-@using FoodInspector.Services
 @inject ISettingsService SettingsService
+@inject ISnackbar Snackbar
 
 <PageTitle>Settings - Food Inspector</PageTitle>
 
-<div class="page-container">
-    <h1>Settings</h1>
+<MudText Typo="Typo.h5" Class="mb-4">Settings</MudText>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">🔥 Flare Mode</h5>
-            <p class="card-text">
-                Flare Mode increases sensitivity to potential triggers. When enabled, 
-                the app will flag ingredients based on their severity score threshold.
-            </p>
-            
-            <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" id="flareModeSwitch" 
-                       @bind="isFlareMode" @onclick="ToggleFlareMode">
-                <label class="form-check-label" for="flareModeSwitch">
-                    <strong>@(isFlareMode ? "Enabled" : "Disabled")</strong>
-                </label>
-            </div>
+<MudStack Spacing="4">
+    <!-- Flare Mode Card -->
+    <MudCard Elevation="2">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="@(isFlareMode ? Color.Warning : Color.Default)" Variant="Variant.Filled">
+                    <MudIcon Icon="@Icons.Material.Filled.LocalFireDepartment" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Flare Mode</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Increase sensitivity during flare periods</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudSwitch T="bool" @bind-Value="isFlareMode" Color="Color.Warning" @bind-Value:after="SaveSettings" />
+            </CardHeaderActions>
+        </MudCardHeader>
+        
+        @if (isFlareMode)
+        {
+            <MudCardContent>
+                <MudAlert Severity="Severity.Warning" Variant="Variant.Text" Dense="true" Class="mb-4">
+                    Flare Mode is active. Moderate severity triggers will escalate to AVOID.
+                </MudAlert>
+                
+                <MudText Typo="Typo.body2" Class="mb-2">
+                    Severity Threshold: <strong>@flareModeThreshold</strong>
+                </MudText>
+                <MudSlider T="int" 
+                           Value="flareModeThreshold" 
+                           ValueChanged="OnThresholdChanged"
+                           Min="1" 
+                           Max="10" 
+                           Step="1"
+                           Color="Color.Warning">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.caption">Lenient (1)</MudText>
+                        <MudText Typo="Typo.caption">Strict (10)</MudText>
+                    </MudStack>
+                </MudSlider>
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-2">
+                    Triggers with severity ≥ @flareModeThreshold will be flagged.
+                </MudText>
+            </MudCardContent>
+        }
+    </MudCard>
 
-            @if (isFlareMode)
-            {
-                <div class="mb-3">
-                    <label for="thresholdSlider" class="form-label">
-                        Severity Threshold: <strong>@flareModeThreshold</strong>
-                    </label>
-                    <input type="range" class="form-range" min="1" max="10" 
-                           id="thresholdSlider" 
-                           @bind="flareModeThreshold" 
-                           @oninput="UpdateThreshold">
-                    <small class="form-text text-muted">
-                        Triggers with severity score >= @flareModeThreshold will be flagged.
-                        (1 = most lenient, 10 = most strict)
-                    </small>
-                </div>
-            }
-        </div>
-    </div>
+    <!-- About Card -->
+    <MudCard Elevation="2">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                    <MudIcon Icon="@Icons.Material.Filled.Info" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">About Food Inspector</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Version 1.0.0</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudList T="string" Dense="true">
+                <MudListItem Icon="@Icons.Material.Filled.QrCodeScanner">
+                    Barcode scanning with Open Food Facts integration
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.DocumentScanner">
+                    Ingredient OCR (Optical Character Recognition)
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.OfflinePin">
+                    Offline ingredient analysis
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.Psychology">
+                    Smart trigger matching with synonyms and cross-reactivity
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.LocalFireDepartment">
+                    Flare Mode for heightened sensitivity
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.History">
+                    Scan history with CSV/JSON export
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.Lock">
+                    Encrypted local database
+                </MudListItem>
+            </MudList>
+        </MudCardContent>
+    </MudCard>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">About Food Inspector</h5>
-            <p class="card-text">
-                <strong>Version:</strong> 1.0.0<br/>
-                <strong>Features:</strong>
-            </p>
-            <ul>
-                <li>Barcode scanning with Open Food Facts integration</li>
-                <li>Ingredient OCR (Optical Character Recognition)</li>
-                <li>Offline ingredient analysis</li>
-                <li>Smart trigger matching with synonyms and cross-reactivity detection</li>
-                <li>Flare Mode for heightened sensitivity</li>
-                <li>Scan history with CSV/JSON export</li>
-                <li>Encrypted local database with SQLCipher</li>
-            </ul>
-        </div>
-    </div>
+    <!-- Safety Levels Card -->
+    <MudCard Elevation="2">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Info" Variant="Variant.Filled">
+                    <MudIcon Icon="@Icons.Material.Filled.Help" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">How It Works</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Understanding safety levels</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudStack Spacing="3">
+                <MudPaper Class="pa-3" Elevation="0" Style="background: #F0FDF4; border-left: 4px solid #22C55E;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Success">SAFE</MudText>
+                            <MudText Typo="Typo.body2">No known triggers detected</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">How It Works</h5>
-            <p class="card-text">
-                <strong>Safety Levels:</strong>
-            </p>
-            <ul>
-                <li><span class="badge bg-success">SAFE</span> - No known triggers detected</li>
-                <li><span class="badge bg-warning">CAUTION</span> - Minor triggers or sensitivities detected</li>
-                <li><span class="badge bg-danger">AVOID</span> - Major allergens or high-severity triggers detected</li>
-            </ul>
-            <p class="mt-3">
+                <MudPaper Class="pa-3" Elevation="0" Style="background: #FFFBEB; border-left: 4px solid #F59E0B;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" />
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2" Style="color: #D97706;">CAUTION</MudText>
+                            <MudText Typo="Typo.body2">Minor triggers or sensitivities detected</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+
+                <MudPaper Class="pa-3" Elevation="0" Style="background: #FEF2F2; border-left: 4px solid #EF4444;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.Dangerous" Color="Color.Error" />
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Error">AVOID</MudText>
+                            <MudText Typo="Typo.body2">Major allergens or high-severity triggers detected</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
+
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-4">
                 The app analyzes ingredients against a database of common allergens, 
                 food sensitivities, and problematic ingredients. It also checks for 
                 synonyms and cross-reactivities to provide comprehensive safety analysis.
-            </p>
-        </div>
-    </div>
-
-    @if (!string.IsNullOrEmpty(saveMessage))
-    {
-        <div class="alert alert-success mt-3">
-            @saveMessage
-        </div>
-    }
-</div>
+            </MudText>
+        </MudCardContent>
+    </MudCard>
+</MudStack>
 
 @code {
     private bool isFlareMode = false;
     private int flareModeThreshold = 5;
-    private string saveMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,31 +158,16 @@
         flareModeThreshold = await SettingsService.GetFlareModeThresholdAsync();
     }
 
-    private async Task ToggleFlareMode()
+    private async Task OnThresholdChanged(int value)
     {
-        // The value will be toggled by the @bind
-        await Task.Delay(100); // Small delay to ensure binding updates
+        flareModeThreshold = value;
         await SaveSettings();
-    }
-
-    private async Task UpdateThreshold(ChangeEventArgs e)
-    {
-        if (int.TryParse(e.Value?.ToString(), out int value))
-        {
-            flareModeThreshold = value;
-            await SaveSettings();
-        }
     }
 
     private async Task SaveSettings()
     {
         await SettingsService.SetFlareModeAsync(isFlareMode);
         await SettingsService.SetFlareModeThresholdAsync(flareModeThreshold);
-        
-        saveMessage = "Settings saved successfully!";
-        StateHasChanged();
-        await Task.Delay(2000);
-        saveMessage = "";
-        StateHasChanged();
+        Snackbar.Add("Settings saved", Severity.Success, config => config.VisibleStateDuration = 1500);
     }
 }

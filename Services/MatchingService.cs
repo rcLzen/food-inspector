@@ -16,6 +16,7 @@ public class MatchDetail
     public string? EvidenceSummary { get; set; }
     public string? SourceName { get; set; }
     public string? Strength { get; set; }
+    public bool IsExpanded { get; set; } = false;
 }
 
 public class MatchResult

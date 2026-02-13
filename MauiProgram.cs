@@ -3,6 +3,7 @@ using FoodInspector.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 
 
 namespace FoodInspector;
@@ -20,6 +21,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddMudServices();
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();

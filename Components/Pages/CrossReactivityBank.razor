@@ -1,56 +1,343 @@
 @page "/cross-reactivity"
-@using FoodInspector.Models
-@using FoodInspector.Services
 @inject IDatabaseService DatabaseService
+@inject ISnackbar Snackbar
 
 <PageTitle>Cross-Reactivity Bank</PageTitle>
 
-<h1>Cross-Reactivity Bank</h1>
-<input class="form-control mb-3" placeholder="Search category or citation" @bind="search" />
+<MudText Typo="Typo.h5" Class="mb-2">Cross-Reactivity Bank</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+    Scientific evidence-based cross-reactivity relationships between allergens.
+</MudText>
 
-@foreach (var rule in FilteredRules)
+<!-- Statistics Cards -->
+<MudGrid Spacing="2" Class="mb-4">
+    <MudItem xs="6" sm="3">
+        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%); color: white;">
+            <MudText Typo="Typo.h4">@rules.Count</MudText>
+            <MudText Typo="Typo.caption">Total Rules</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6" sm="3">
+        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #10B981 0%, #6EE7B7 100%); color: white;">
+            <MudText Typo="Typo.h4">@rules.Count(r => r.Enabled)</MudText>
+            <MudText Typo="Typo.caption">Active</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6" sm="3">
+        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #EF4444 0%, #FCA5A5 100%); color: white;">
+            <MudText Typo="Typo.h4">@rules.Count(r => r.Strength == CrossReactivityStrength.High)</MudText>
+            <MudText Typo="Typo.caption">High Risk</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6" sm="3">
+        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #3B82F6 0%, #93C5FD 100%); color: white;">
+            <MudText Typo="Typo.h4">@evidenceSources.Count</MudText>
+            <MudText Typo="Typo.caption">Citations</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<!-- Filters -->
+<MudPaper Class="pa-4 mb-4" Elevation="1">
+    <MudGrid Spacing="2">
+        <MudItem xs="12" sm="4">
+            <MudTextField T="string" 
+                          @bind-Value="search" 
+                          Placeholder="Search allergens, categories..." 
+                          Variant="Variant.Outlined"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Immediate="true"
+                          Clearable="true"
+                          Dense="true" />
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudSelect T="string" 
+                       @bind-Value="selectedCategory" 
+                       Label="Category" 
+                       Variant="Variant.Outlined"
+                       Dense="true"
+                       Clearable="true">
+                @foreach (var category in categories)
+                {
+                    <MudSelectItem Value="@category">@category</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudSelect T="string" 
+                       @bind-Value="selectedStrength" 
+                       Label="Strength" 
+                       Variant="Variant.Outlined"
+                       Dense="true"
+                       Clearable="true">
+                <MudSelectItem Value="@("High")">🔴 High</MudSelectItem>
+                <MudSelectItem Value="@("Medium")">🟡 Medium</MudSelectItem>
+                <MudSelectItem Value="@("Low")">🟢 Low</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="2">
+            <MudSwitch T="bool" @bind-Value="showEnabledOnly" Label="Active only" Color="Color.Primary" />
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<!-- View Toggle & Count -->
+<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+    <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+        <MudButton Color="@(groupByCategory ? Color.Primary : Color.Default)" OnClick="@(() => groupByCategory = true)">
+            Group by Category
+        </MudButton>
+        <MudButton Color="@(!groupByCategory ? Color.Primary : Color.Default)" OnClick="@(() => groupByCategory = false)">
+            Show All
+        </MudButton>
+    </MudButtonGroup>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Showing @FilteredRules.Count() of @rules.Count rules
+    </MudText>
+</MudStack>
+
+@if (isLoading)
 {
-    <div class="card mb-2">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <strong>@(rule.SourceTrigger?.Name ?? rule.SourceCategory) → @(rule.TargetTrigger?.Name ?? rule.TargetCategory)</strong>
-                    <div>Strength: @rule.Strength</div>
-                    <div>@rule.EvidenceSource?.CitationShort</div>
-                </div>
-                <div>
-                    <input type="checkbox" checked="@rule.Enabled" @onchange="(e) => ToggleRule(rule, (bool)e.Value!)" /> Enabled
-                </div>
-            </div>
-            <details>
-                <summary>Evidence details</summary>
-                <div><strong>Citation:</strong> @rule.EvidenceSource?.CitationFull</div>
-                <div><strong>Summary:</strong> @rule.EvidenceSource?.Summary</div>
-                <div><a href="@rule.EvidenceSource?.Url" target="_blank">@rule.EvidenceSource?.Url</a></div>
-                <div><em>@rule.Notes</em></div>
-            </details>
-        </div>
-    </div>
+    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height: 200px;">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </MudStack>
+}
+else if (!FilteredRules.Any())
+{
+    <MudAlert Severity="Severity.Info">
+        No rules found. Try adjusting your filters.
+    </MudAlert>
+}
+else if (groupByCategory)
+{
+    @foreach (var group in GroupedRules)
+    {
+        var groupKey = group.Key;
+        <MudExpansionPanels Class="mb-3">
+            <MudExpansionPanel Expanded="@IsGroupExpanded(groupKey)" ExpandedChanged="@(expanded => SetGroupExpanded(groupKey, expanded))">
+                <TitleContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@GetCategoryIcon(group.Key)" />
+                        <MudText Typo="Typo.subtitle1"><strong>@group.Key</strong></MudText>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Default">@group.Count()</MudChip>
+                    </MudStack>
+                </TitleContent>
+                <ChildContent>
+                    <MudStack Spacing="2">
+                        @foreach (var rule in group)
+                        {
+                            @RenderRuleCard(rule)
+                        }
+                    </MudStack>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    }
+}
+else
+{
+    <MudStack Spacing="2">
+        @foreach (var rule in FilteredRules)
+        {
+            @RenderRuleCard(rule)
+        }
+    </MudStack>
 }
 
 @code {
     private string search = string.Empty;
+    private string selectedCategory = string.Empty;
+    private string selectedStrength = string.Empty;
+    private bool showEnabledOnly = false;
+    private bool groupByCategory = true;
+    private bool isLoading = true;
     private List<CrossReactivityRule> rules = new();
+    private List<EvidenceSource> evidenceSources = new();
+    private List<string> categories = new();
 
     protected override async Task OnInitializedAsync()
     {
         rules = await DatabaseService.GetCrossReactivityRulesAsync();
+        
+        categories = rules
+            .SelectMany(r => new[] { r.SourceCategory, r.TargetCategory })
+            .Where(c => !string.IsNullOrEmpty(c))
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList()!;
+        
+        evidenceSources = rules
+            .Where(r => r.EvidenceSource != null)
+            .Select(r => r.EvidenceSource!)
+            .DistinctBy(e => e.Id)
+            .ToList();
+        
+        isLoading = false;
     }
 
     private IEnumerable<CrossReactivityRule> FilteredRules => rules.Where(r =>
-        string.IsNullOrWhiteSpace(search)
-        || (r.SourceCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-        || (r.TargetCategory?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-        || (r.EvidenceSource?.CitationShort.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
-
-    private async Task ToggleRule(CrossReactivityRule rule, bool enabled)
     {
-        await DatabaseService.ToggleCrossReactivityRuleAsync(rule.Id, enabled);
-        rule.Enabled = enabled;
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var searchLower = search.ToLowerInvariant();
+            var matchesSearch = 
+                (r.SourceCategory?.ToLowerInvariant().Contains(searchLower) ?? false) ||
+                (r.TargetCategory?.ToLowerInvariant().Contains(searchLower) ?? false) ||
+                (r.SourceTrigger?.Name.ToLowerInvariant().Contains(searchLower) ?? false) ||
+                (r.TargetTrigger?.Name.ToLowerInvariant().Contains(searchLower) ?? false) ||
+                (r.EvidenceSource?.CitationShort.ToLowerInvariant().Contains(searchLower) ?? false) ||
+                (r.Notes.ToLowerInvariant().Contains(searchLower));
+            if (!matchesSearch) return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedCategory))
+        {
+            if (r.SourceCategory != selectedCategory && r.TargetCategory != selectedCategory)
+                return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedStrength))
+        {
+            if (r.Strength.ToString() != selectedStrength)
+                return false;
+        }
+
+        if (showEnabledOnly && !r.Enabled)
+            return false;
+
+        return true;
+    }).OrderByDescending(r => r.Strength).ThenBy(r => r.SourceCategory ?? r.SourceTrigger?.Category);
+
+    private IEnumerable<IGrouping<string, CrossReactivityRule>> GroupedRules =>
+        FilteredRules.GroupBy(r => r.SourceCategory ?? r.SourceTrigger?.Category ?? "Other")
+                     .OrderBy(g => g.Key);
+
+    private async Task ToggleRule(CrossReactivityRule rule)
+    {
+        rule.Enabled = !rule.Enabled;
+        await DatabaseService.ToggleCrossReactivityRuleAsync(rule.Id, rule.Enabled);
+        Snackbar.Add(rule.Enabled ? "Rule enabled" : "Rule disabled", Severity.Success);
+    }
+
+    private static string GetCategoryIcon(string category) => category switch
+    {
+        "Cereal" => Icons.Material.Filled.Grass,
+        "Legume" => Icons.Material.Filled.Spa,
+        "Nut" => Icons.Material.Filled.EggAlt,
+        "Dairy" => Icons.Material.Filled.LocalDrink,
+        "Egg" => Icons.Material.Filled.Egg,
+        "Seafood" => Icons.Material.Filled.SetMeal,
+        "Fungi/Yeast" => Icons.Material.Filled.Yard,
+        "Nightshade" => Icons.Material.Filled.LocalFlorist,
+        "Fruit" => Icons.Material.Filled.LocalFlorist,
+        "Seed" => Icons.Material.Filled.FilterVintage,
+        "Seed Oil" => Icons.Material.Filled.OilBarrel,
+        "Additive" => Icons.Material.Filled.Science,
+        "Vegetable" => Icons.Material.Filled.Grass,
+        "Other" => Icons.Material.Filled.Category,
+        _ => Icons.Material.Filled.Category
+    };
+
+    private static Color GetStrengthColor(CrossReactivityStrength strength) => strength switch
+    {
+        CrossReactivityStrength.High => Color.Error,
+        CrossReactivityStrength.Medium => Color.Warning,
+        CrossReactivityStrength.Low => Color.Success,
+        _ => Color.Default
+    };
+
+    private static string GetStrengthIcon(CrossReactivityStrength strength) => strength switch
+    {
+        CrossReactivityStrength.High => Icons.Material.Filled.Error,
+        CrossReactivityStrength.Medium => Icons.Material.Filled.Warning,
+        CrossReactivityStrength.Low => Icons.Material.Filled.CheckCircle,
+        _ => Icons.Material.Filled.Help
+    };
+
+    private RenderFragment RenderRuleCard(CrossReactivityRule rule) => __builder =>
+    {
+        <MudCard Elevation="1" Class="@(rule.Enabled ? "" : "mud-card-disabled")" Style="@(rule.Enabled ? "" : "opacity: 0.6;")">
+            <MudCardContent Class="pb-0">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Style="flex-wrap: wrap;">
+                        <MudChip T="string" Color="Color.Primary" Size="Size.Small">
+                            @(rule.SourceTrigger?.Name ?? rule.SourceCategory)
+                        </MudChip>
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Color="Color.Secondary" />
+                        <MudChip T="string" Color="Color.Secondary" Size="Size.Small">
+                            @(rule.TargetTrigger?.Name ?? rule.TargetCategory)
+                        </MudChip>
+                        <MudChip T="string" 
+                                 Color="@GetStrengthColor(rule.Strength)" 
+                                 Size="Size.Small"
+                                 Variant="Variant.Outlined"
+                                 Icon="@GetStrengthIcon(rule.Strength)">
+                            @rule.Strength
+                        </MudChip>
+                    </MudStack>
+                    <MudSwitch T="bool" Value="@rule.Enabled" ValueChanged="@(async () => await ToggleRule(rule))" Color="Color.Primary" />
+                </MudStack>
+
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Class="mt-2">
+                    <MudIcon Icon="@Icons.Material.Filled.MenuBook" Size="Size.Small" Color="Color.Secondary" />
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@rule.EvidenceSource?.CitationShort</MudText>
+                </MudStack>
+
+                <MudCollapse Expanded="@expandedRules.Contains(rule.Id)">
+                    <MudDivider Class="my-3" />
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2"><strong>Full Citation:</strong></MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">@rule.EvidenceSource?.CitationFull</MudText>
+                        
+                        <MudText Typo="Typo.body2"><strong>Summary:</strong></MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">@rule.EvidenceSource?.Summary</MudText>
+                        
+                        <MudText Typo="Typo.body2"><strong>Notes:</strong></MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Style="font-style: italic;">@rule.Notes</MudText>
+                        
+                        @if (!string.IsNullOrEmpty(rule.EvidenceSource?.Url))
+                        {
+                            <MudButton Variant="Variant.Outlined" 
+                                       Size="Size.Small" 
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.OpenInNew"
+                                       Href="@rule.EvidenceSource?.Url"
+                                       Target="_blank">
+                                View Source
+                            </MudButton>
+                        }
+                    </MudStack>
+                </MudCollapse>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" 
+                           Size="Size.Small"
+                           OnClick="@(() => ToggleExpanded(rule.Id))">
+                    @(expandedRules.Contains(rule.Id) ? "Hide Details" : "Show Details")
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    };
+
+    private HashSet<int> expandedRules = new();
+    private HashSet<string> expandedGroups = new() { "Cereal", "Legume", "Nut", "Seafood" }; // Default expanded
+
+    private void ToggleExpanded(int ruleId)
+    {
+        if (expandedRules.Contains(ruleId))
+            expandedRules.Remove(ruleId);
+        else
+            expandedRules.Add(ruleId);
+    }
+
+    private bool IsGroupExpanded(string groupKey) => expandedGroups.Contains(groupKey);
+
+    private void SetGroupExpanded(string groupKey, bool expanded)
+    {
+        if (expanded)
+            expandedGroups.Add(groupKey);
+        else
+            expandedGroups.Remove(groupKey);
     }
 }

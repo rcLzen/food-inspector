@@ -78,7 +78,7 @@
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.8" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.8" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
-    
+    <PackageReference Include="MudBlazor" Version="7.8.0" />
     <PackageReference Include="CsvHelper" Version="33.0.1" />
   </ItemGroup>
 

@@ -1,78 +1,122 @@
 @page "/history"
-@using FoodInspector.Services
-@using FoodInspector.Models
 @inject IDatabaseService DatabaseService
 @inject IExportService ExportService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>History - Food Inspector</PageTitle>
 
-<div class="page-container">
-    <h1>Scan History</h1>
+<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+    <MudText Typo="Typo.h5">Scan History</MudText>
+    <MudStack Row="true" Spacing="2">
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.TableChart"
+                   Size="Size.Small"
+                   OnClick="ExportCsv"
+                   Disabled="@(!history.Any())">
+            CSV
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Secondary" 
+                   StartIcon="@Icons.Material.Filled.Code"
+                   Size="Size.Small"
+                   OnClick="ExportJson"
+                   Disabled="@(!history.Any())">
+            JSON
+        </MudButton>
+    </MudStack>
+</MudStack>
 
-    <div class="mb-3">
-        <button class="btn btn-primary me-2" @onclick="ExportCsv">Export CSV</button>
-        <button class="btn btn-secondary" @onclick="ExportJson">Export JSON</button>
-    </div>
-
-    @if (isLoading)
-    {
-        <div class="text-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    }
-    else if (!history.Any())
-    {
-        <p>No scan history yet. Start scanning to see results here!</p>
-    }
-    else
-    {
+@if (isLoading)
+{
+    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height: 200px;">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Loading history...</MudText>
+    </MudStack>
+}
+else if (!history.Any())
+{
+    <MudPaper Class="pa-8" Elevation="0" Style="text-align: center; background: #f5f5f5;">
+        <MudIcon Icon="@Icons.Material.Filled.HistoryToggleOff" Size="Size.Large" Color="Color.Secondary" />
+        <MudText Typo="Typo.h6" Class="mt-4">No Scan History Yet</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Start scanning products to see your history here.</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
+            Start Scanning
+        </MudButton>
+    </MudPaper>
+}
+else
+{
+    <MudStack Spacing="3">
         @foreach (var scan in history)
         {
-            <div class="history-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <h5>
-                            @(scan.ProductName ?? "Manual Scan")
-                            @if (scan.FlareModeOn)
-                            {
-                                <span class="flare-mode-badge">🔥 Flare Mode</span>
-                            }
-                        </h5>
-                        <small class="text-muted">@scan.CreatedUtc.ToString("g")</small>
+            <MudCard Elevation="2" Style="@GetCardBorderStyle(scan.FinalStatus)">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                        <MudStack Spacing="1">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.h6">@(scan.ProductName ?? "Manual Scan")</MudText>
+                                @if (scan.FlareModeOn)
+                                {
+                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small" Icon="@Icons.Material.Filled.LocalFireDepartment">
+                                        Flare Mode
+                                    </MudChip>
+                                }
+                            </MudStack>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" Style="vertical-align: middle;" />
+                                @scan.CreatedUtc.ToLocalTime().ToString("g")
+                            </MudText>
+                        </MudStack>
                         
-                        @if (!string.IsNullOrEmpty(scan.Barcode))
-                        {
-                            <p><strong>Barcode:</strong> @scan.Barcode</p>
-                        }
-                        
-                        <div class="@GetSafetyBadgeClass(scan.FinalStatus)">
-                            @GetSafetyLevelText(scan.FinalStatus)
-                        </div>
-                        
-                        <p class="mt-2"><strong>Ingredients:</strong></p>
-                        <p class="small">@(scan.RawIngredientsText.Length > 200 ? scan.RawIngredientsText.Substring(0, 200) + "..." : scan.RawIngredientsText)</p>
-                    </div>
-                    
-                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteScan(scan.Id)">Delete</button>
-                </div>
-            </div>
-        }
-    }
+                        <MudChip T="string" 
+                                 Color="@GetSafetyColor(scan.FinalStatus)" 
+                                 Size="Size.Small"
+                                 Icon="@GetSafetyIcon(scan.FinalStatus)">
+                            @scan.FinalStatus
+                        </MudChip>
+                    </MudStack>
 
-    @if (!string.IsNullOrEmpty(exportMessage))
-    {
-        <div class="alert alert-success mt-3">
-            @exportMessage
-        </div>
-    }
-</div>
+                    @if (!string.IsNullOrEmpty(scan.Barcode))
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mt-2">
+                            <MudIcon Icon="@Icons.Material.Filled.QrCode" Size="Size.Small" Color="Color.Secondary" />
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@scan.Barcode</MudText>
+                        </MudStack>
+                    }
+
+                    <MudDivider Class="my-3" />
+
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-1">
+                        <strong>Ingredients:</strong>
+                    </MudText>
+                    <MudText Typo="Typo.body2" Style="@(scan.RawIngredientsText.Length > 200 ? "max-height: 100px; overflow: hidden;" : "")">
+                        @(scan.RawIngredientsText.Length > 200 ? scan.RawIngredientsText.Substring(0, 200) + "..." : scan.RawIngredientsText)
+                    </MudText>
+
+                    @if (!string.IsNullOrEmpty(scan.AnalysisSummary))
+                    {
+                        <MudAlert Severity="@GetAlertSeverity(scan.FinalStatus)" Dense="true" Class="mt-3" NoIcon="true">
+                            @scan.AnalysisSummary
+                        </MudAlert>
+                    }
+                </MudCardContent>
+                <MudCardActions>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                   Color="Color.Error" 
+                                   Size="Size.Small"
+                                   OnClick="@(() => DeleteScan(scan.Id))" />
+                </MudCardActions>
+            </MudCard>
+        }
+    </MudStack>
+}
 
 @code {
     private List<ScanRecord> history = new();
     private bool isLoading = true;
-    private string exportMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,15 +126,28 @@
     private async Task LoadHistory()
     {
         isLoading = true;
+        StateHasChanged();
         history = await DatabaseService.GetScanHistoryAsync();
         isLoading = false;
-        StateHasChanged();
     }
 
     private async Task DeleteScan(int id)
     {
-        await DatabaseService.DeleteScanHistoryAsync(id);
-        await LoadHistory();
+        var parameters = new DialogParameters<MudDialog>();
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var result = await DialogService.ShowMessageBox(
+            "Delete Scan",
+            "Are you sure you want to delete this scan record?",
+            yesText: "Delete",
+            cancelText: "Cancel");
+
+        if (result == true)
+        {
+            await DatabaseService.DeleteScanHistoryAsync(id);
+            Snackbar.Add("Scan deleted", Severity.Success);
+            await LoadHistory();
+        }
     }
 
     private async Task ExportCsv()
@@ -98,16 +155,11 @@
         try
         {
             var filePath = await ExportService.ExportToCsvAsync(history);
-            exportMessage = $"Exported to CSV: {filePath}";
-            StateHasChanged();
-            await Task.Delay(3000);
-            exportMessage = "";
-            StateHasChanged();
+            Snackbar.Add($"Exported to: {filePath}", Severity.Success);
         }
         catch (Exception ex)
         {
-            exportMessage = $"Export failed: {ex.Message}";
-            StateHasChanged();
+            Snackbar.Add($"Export failed: {ex.Message}", Severity.Error);
         }
     }
 
@@ -116,38 +168,43 @@
         try
         {
             var filePath = await ExportService.ExportToJsonAsync(history);
-            exportMessage = $"Exported to JSON: {filePath}";
-            StateHasChanged();
-            await Task.Delay(3000);
-            exportMessage = "";
-            StateHasChanged();
+            Snackbar.Add($"Exported to: {filePath}", Severity.Success);
         }
         catch (Exception ex)
         {
-            exportMessage = $"Export failed: {ex.Message}";
-            StateHasChanged();
+            Snackbar.Add($"Export failed: {ex.Message}", Severity.Error);
         }
     }
 
-    private string GetSafetyBadgeClass(SafetyLevel level)
+    private static string GetCardBorderStyle(SafetyLevel level) => level switch
     {
-        return level switch
-        {
-            SafetyLevel.Safe => "badge bg-success",
-            SafetyLevel.Caution => "badge bg-warning",
-            SafetyLevel.Avoid => "badge bg-danger",
-            _ => "badge bg-secondary"
-        };
-    }
+        SafetyLevel.Safe => "border-left: 4px solid #22C55E;",
+        SafetyLevel.Caution => "border-left: 4px solid #F59E0B;",
+        SafetyLevel.Avoid => "border-left: 4px solid #EF4444;",
+        _ => ""
+    };
 
-    private string GetSafetyLevelText(SafetyLevel level)
+    private static Color GetSafetyColor(SafetyLevel level) => level switch
     {
-        return level switch
-        {
-            SafetyLevel.Safe => "✅ SAFE",
-            SafetyLevel.Caution => "⚠️ CAUTION",
-            SafetyLevel.Avoid => "🚫 AVOID",
-            _ => "UNKNOWN"
-        };
-    }
+        SafetyLevel.Safe => Color.Success,
+        SafetyLevel.Caution => Color.Warning,
+        SafetyLevel.Avoid => Color.Error,
+        _ => Color.Default
+    };
+
+    private static string GetSafetyIcon(SafetyLevel level) => level switch
+    {
+        SafetyLevel.Safe => Icons.Material.Filled.CheckCircle,
+        SafetyLevel.Caution => Icons.Material.Filled.Warning,
+        SafetyLevel.Avoid => Icons.Material.Filled.Dangerous,
+        _ => Icons.Material.Filled.Help
+    };
+
+    private static Severity GetAlertSeverity(SafetyLevel level) => level switch
+    {
+        SafetyLevel.Safe => Severity.Success,
+        SafetyLevel.Caution => Severity.Warning,
+        SafetyLevel.Avoid => Severity.Error,
+        _ => Severity.Info
+    };
 }
