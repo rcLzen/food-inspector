@@ -1,0 +1,40 @@
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="3">
+            <MudAlert Severity="Severity.Info" Dense="true">
+                Camera scanning is not available on this device. Enter the barcode number printed near the barcode on the product packaging.
+            </MudAlert>
+            <MudTextField T="string" 
+                          @bind-Value="BarcodeValue" 
+                          Label="Barcode Number"
+                          Placeholder="e.g. 0737628064502"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Text"
+                          Immediate="true"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.QrCode" />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                   Variant="Variant.Filled" 
+                   OnClick="Submit"
+                   Disabled="@string.IsNullOrWhiteSpace(BarcodeValue)">
+            Look Up
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public string BarcodeValue { get; set; } = "";
+
+    private void Submit() => MudDialog?.Close(DialogResult.Ok(BarcodeValue));
+    private void Cancel() => MudDialog?.Cancel();
+}

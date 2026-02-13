@@ -9,7 +9,7 @@ html, body {
 
 .status-bar-safe-area {
     padding-top: env(safe-area-inset-top);
-    background-color: #7C3AED;
+    background-color: #4DA8DA;
 }
 
 #blazor-error-ui {

@@ -6,17 +6,17 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Color="Color.Primary">
+    <MudAppBar Elevation="1" Color="Color.Primary" Fixed="true">
         <MudIcon Icon="@Icons.Material.Filled.FoodBank" Class="mr-2" />
         <MudText Typo="Typo.h6">Food Inspector</MudText>
         <MudSpacer />
     </MudAppBar>
 
-    <MudMainContent Class="pa-4" Style="padding-bottom: 80px !important;">
+    <MudMainContent Class="pa-4" Style="padding-top: 80px !important; padding-bottom: 80px !important;">
         @Body
     </MudMainContent>
 
-    <MudAppBar Bottom="true" Elevation="2" Color="Color.Surface" Style="height: 64px;">
+    <MudAppBar Bottom="true" Elevation="2" Color="Color.Surface" Fixed="true" Style="height: 64px;">
         <MudGrid Spacing="0" Justify="Justify.SpaceAround" Style="width: 100%;">
             <MudItem>
                 <NavLink href="/" Match="NavLinkMatch.All" class="nav-link-item">
@@ -59,22 +59,22 @@
     {
         PaletteLight = new PaletteLight
         {
-            Primary = "#7C3AED",
-            PrimaryDarken = "#5B21B6",
-            PrimaryLighten = "#A78BFA",
+            Primary = "#4DA8DA",
+            PrimaryDarken = "#2E86AB",
+            PrimaryLighten = "#87CEEB",
             Secondary = "#10B981",
             Tertiary = "#F59E0B",
-            Info = "#3B82F6",
+            Info = "#60A5FA",
             Success = "#22C55E",
             Warning = "#F59E0B",
             Error = "#EF4444",
-            AppbarBackground = "#7C3AED",
+            AppbarBackground = "#4DA8DA",
             AppbarText = "#FFFFFF",
-            Background = "#F9FAFB",
+            Background = "#F0F7FA",
             Surface = "#FFFFFF",
             DrawerBackground = "#FFFFFF",
-            TextPrimary = "#1F2937",
-            TextSecondary = "#6B7280"
+            TextPrimary = "#1E3A4F",
+            TextSecondary = "#5A7D8C"
         },
         Typography = new Typography
         {

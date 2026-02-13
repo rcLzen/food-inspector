@@ -7,6 +7,7 @@
 @inject ISettingsService SettingsService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Scan - Food Inspector</PageTitle>
 
@@ -26,6 +27,26 @@
 }
 else if (currentResult != null)
 {
+    <!-- Product info banner if from barcode -->
+    @if (!string.IsNullOrEmpty(currentProductName) || !string.IsNullOrEmpty(currentBarcode))
+    {
+        <MudPaper Class="pa-3 mb-4" Elevation="1" Style="border-left: 4px solid var(--mud-palette-primary);">
+            <MudStack Spacing="1">
+                @if (!string.IsNullOrEmpty(currentProductName))
+                {
+                    <MudText Typo="Typo.subtitle1"><strong>@currentProductName</strong></MudText>
+                }
+                @if (!string.IsNullOrEmpty(currentBarcode))
+                {
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.QrCode" Size="Size.Small" Color="Color.Secondary" />
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">@currentBarcode</MudText>
+                    </MudStack>
+                }
+            </MudStack>
+        </MudPaper>
+    }
+
     <MudCard Elevation="3" Class="mb-4" Style="@GetSafetyCardStyle(currentResult.SafetyLevel)">
         <MudCardHeader>
             <CardHeaderContent>
@@ -72,7 +93,7 @@ else if (currentResult != null)
                         {
                             <MudCard Outlined="true" Class="mb-2">
                                 <MudCardContent>
-                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Style="flex-wrap: wrap;">
                                         <MudChip T="string" Color="Color.Primary" Size="Size.Small">@match.SourceName</MudChip>
                                         <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
                                         <MudChip T="string" Color="Color.Secondary" Size="Size.Small">@match.TriggerName</MudChip>
@@ -116,7 +137,7 @@ else
     <MudTextField T="string" 
                   @bind-Value="ingredientsText"
                   Label="Enter Ingredients"
-                  Placeholder="Enter ingredients manually or use scanning options below..."
+                  Placeholder="Paste or type an ingredient list, or use the buttons below..."
                   Variant="Variant.Outlined"
                   Lines="5"
                   Class="mb-4"
@@ -129,7 +150,14 @@ else
                    FullWidth="true"
                    Size="Size.Large"
                    OnClick="ScanBarcode">
-            Scan Barcode
+            @if (BarcodeScanner.IsNativeScanSupported)
+            {
+                <text>Scan Barcode</text>
+            }
+            else
+            {
+                <text>Enter Barcode</text>
+            }
         </MudButton>
         
         <MudButton Variant="Variant.Filled" 
@@ -157,10 +185,10 @@ else
     <MudText Typo="Typo.h6" Class="mb-3">Quick Tips</MudText>
     <MudStack Spacing="2">
         <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
-            Use barcode scanning for pre-packaged foods to automatically fetch ingredients.
+            Scan a barcode to automatically look up ingredients from Open Food Facts.
         </MudAlert>
         <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
-            OCR scanning works best with clear, well-lit ingredient labels.
+            Paste ingredient lists from a website or type them in manually.
         </MudAlert>
         <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
             Enable Flare Mode in Settings during sensitive periods.
@@ -185,22 +213,101 @@ else
         flareModeThreshold = await SettingsService.GetFlareModeThresholdAsync();
     }
 
-    private async Task ScanBarcode() 
-    { 
-        Snackbar.Add("Barcode scanning requires device camera access", Severity.Info);
-        await Task.CompletedTask; 
+    private async Task ScanBarcode()
+    {
+        string? barcode = null;
+
+        if (BarcodeScanner.IsNativeScanSupported)
+        {
+            // Native camera scan on Android/iOS
+            // Don't show loading spinner — the native modal page covers the screen
+            barcode = await BarcodeScanner.ScanBarcodeAsync();
+
+            if (string.IsNullOrEmpty(barcode))
+            {
+                Snackbar.Add("No barcode detected. Try again or enter manually.", Severity.Warning);
+                return;
+            }
+        }
+        else
+        {
+            // Windows/desktop fallback: manual entry dialog
+            barcode = await ShowBarcodeEntryDialog();
+            if (string.IsNullOrEmpty(barcode))
+                return;
+        }
+
+        await LookupBarcode(barcode);
     }
-    
-    private async Task ScanIngredients() 
-    { 
-        Snackbar.Add("OCR scanning requires device camera access", Severity.Info);
-        await Task.CompletedTask; 
+
+    private async Task<string?> ShowBarcodeEntryDialog()
+    {
+        var barcodeValue = "";
+        var parameters = new DialogParameters<BarcodeEntryDialog>
+        {
+            { x => x.BarcodeValue, barcodeValue }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+        var dialog = await DialogService.ShowAsync<BarcodeEntryDialog>("Enter Barcode", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled && result.Data is string code && !string.IsNullOrWhiteSpace(code))
+            return code.Trim();
+
+        return null;
+    }
+
+    private async Task LookupBarcode(string barcode)
+    {
+        currentBarcode = barcode;
+
+        isLoading = true;
+        loadingMessage = $"Looking up barcode {barcode}...";
+        StateHasChanged();
+
+        var product = await OpenFoodFacts.GetProductByBarcodeAsync(barcode);
+
+        if (product == null || string.IsNullOrWhiteSpace(product.Ingredients))
+        {
+            isLoading = false;
+            StateHasChanged();
+
+            Snackbar.Add("Product not found or no ingredients listed. You can enter them manually.", Severity.Warning);
+            return;
+        }
+
+        currentProductName = product.Brands != null
+            ? $"{product.ProductName} ({product.Brands})"
+            : product.ProductName;
+        ingredientsText = product.Ingredients;
+
+        Snackbar.Add($"Found: {currentProductName ?? "Unknown product"}", Severity.Success);
+
+        // Auto-analyze
+        loadingMessage = "Analyzing ingredients...";
+        StateHasChanged();
+
+        currentResult = await AnalysisService.AnalyzeIngredientsAsync(ingredientsText, isFlareMode, flareModeThreshold);
+        isLoading = false;
+    }
+
+    private async Task ScanIngredients()
+    {
+        Snackbar.Add("OCR scanning is coming soon. For now, please type or paste ingredients.", Severity.Info);
+        await Task.CompletedTask;
     }
 
     private async Task AnalyzeManual()
     {
         if (!string.IsNullOrWhiteSpace(ingredientsText))
         {
+            currentBarcode = null;
+            currentProductName = null;
             await AnalyzeIngredients();
         }
     }
@@ -219,9 +326,7 @@ else
     private async Task SaveToHistory()
     {
         if (currentResult == null)
-        {
             return;
-        }
 
         var record = new ScanRecord
         {

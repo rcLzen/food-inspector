@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:scanner="clr-namespace:BarcodeScanner.Mobile;assembly=BarcodeScanner.Mobile.Maui"
+             x:Class="FoodInspector.Pages.ScanPage"
+             Title="Scan Barcode"
+             Shell.PresentationMode="Modal">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Camera view for barcode scanning -->
+        <scanner:CameraView x:Name="CameraView"
+                            Grid.Row="0"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill"
+                            TorchOn="False"
+                            VibrationOnDetected="True"
+                            ScanInterval="500"
+                            OnDetected="CameraView_OnDetected" />
+
+        <!-- Overlay with instruction text and cancel button -->
+        <Grid Grid.Row="0" 
+              InputTransparent="True"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill">
+
+            <!-- Instruction label at top -->
+            <Label Text="Point at a barcode"
+                   TextColor="White"
+                   FontSize="18"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Start"
+                   Margin="0,60,0,0"
+                   Padding="16,8"
+                   BackgroundColor="#88000000" />
+        </Grid>
+
+        <!-- Bottom bar with cancel and torch buttons -->
+        <Grid Grid.Row="1"
+              BackgroundColor="#222222"
+              Padding="16"
+              ColumnDefinitions="*,Auto,*">
+
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    TextColor="White"
+                    BackgroundColor="Transparent"
+                    FontSize="16"
+                    Clicked="CancelButton_Clicked"
+                    HorizontalOptions="Start" />
+
+            <Button Grid.Column="2"
+                    x:Name="TorchButton"
+                    Text="?? Torch"
+                    TextColor="White"
+                    BackgroundColor="Transparent"
+                    FontSize="16"
+                    Clicked="TorchButton_Clicked"
+                    HorizontalOptions="End" />
+        </Grid>
+    </Grid>
+
+</ContentPage>

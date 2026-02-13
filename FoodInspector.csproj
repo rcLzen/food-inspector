@@ -67,6 +67,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BarcodeScanner.Mobile.Maui" Version="8.0.0" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.82" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.82" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.82" />
@@ -93,6 +94,12 @@
     <EmbeddedResource Remove="dotnet-tests\**" />
     <MauiXaml Remove="dotnet-tests\**" />
     <None Remove="dotnet-tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiXaml Update="Pages\ScanPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
   </ItemGroup>
 
 </Project>

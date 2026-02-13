@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using BarcodeScanner.Mobile;
 
 
 namespace FoodInspector;
@@ -18,6 +19,10 @@ public static class MauiProgram
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            })
+            .ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddBarcodeScannerHandler();
             });
 
         builder.Services.AddMauiBlazorWebView();
