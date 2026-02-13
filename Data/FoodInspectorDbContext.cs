@@ -18,10 +18,10 @@ public class FoodInspectorDbContext : DbContext
     {
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite();
-    }
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    optionsBuilder.UseSqlite();
+    //}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
