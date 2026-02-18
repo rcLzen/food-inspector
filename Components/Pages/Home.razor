@@ -47,12 +47,12 @@ else if (currentResult != null)
         </MudPaper>
     }
 
-    <MudCard Elevation="3" Class="mb-4" Style="@GetSafetyCardStyle(currentResult.SafetyLevel)">
+    <MudCard Elevation="0" Class="@($"mb-4 {GetSafetyCardClass(currentResult.SafetyLevel)}")" Style="border-radius: 12px;">
         <MudCardHeader>
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                    <MudIcon Icon="@GetSafetyIcon(currentResult.SafetyLevel)" Size="Size.Large" />
-                    <MudText Typo="Typo.h4">@GetSafetyLevelText(currentResult.SafetyLevel)</MudText>
+                    <MudIcon Icon="@GetSafetyIcon(currentResult.SafetyLevel)" Size="Size.Large" Class="@GetSafetyIconClass(currentResult.SafetyLevel)" />
+                    <MudText Typo="Typo.h5" Class="@GetSafetyLabelClass(currentResult.SafetyLevel)" Style="font-weight: 700;">@GetSafetyLevelText(currentResult.SafetyLevel)</MudText>
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
@@ -192,6 +192,7 @@ else
                    StartIcon="@Icons.Material.Filled.QrCodeScanner"
                    FullWidth="true"
                    Size="Size.Large"
+                   Class="fi-cta-primary"
                    OnClick="ScanBarcode">
             @if (BarcodeScanner.IsNativeScanSupported)
             {
@@ -203,8 +204,8 @@ else
             }
         </MudButton>
         
-        <MudButton Variant="Variant.Filled" 
-                   Color="Color.Info" 
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Primary" 
                    StartIcon="@Icons.Material.Filled.DocumentScanner"
                    FullWidth="true"
                    Size="Size.Large"
@@ -213,7 +214,7 @@ else
         </MudButton>
         
         <MudButton Variant="Variant.Filled" 
-                   Color="Color.Success" 
+                   Color="Color.Primary" 
                    StartIcon="@Icons.Material.Filled.Search"
                    FullWidth="true"
                    Size="Size.Large"
@@ -227,15 +228,18 @@ else
 
     <MudText Typo="Typo.h6" Class="mb-3">Quick Tips</MudText>
     <MudStack Spacing="2">
-        <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
-            Scan a barcode to automatically look up ingredients from Open Food Facts.
-        </MudAlert>
-        <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
-            Paste ingredient lists from a website or type them in manually.
-        </MudAlert>
-        <MudAlert Severity="Severity.Info" Dense="true" NoIcon="false">
-            Enable Flare Mode in Settings during sensitive periods.
-        </MudAlert>
+        <div class="fi-tip-card">
+            <MudIcon Icon="@Icons.Material.Filled.QrCodeScanner" Size="Size.Small" Class="fi-tip-icon" />
+            <span class="fi-tip-text">Scan a barcode to automatically look up ingredients from Open Food Facts.</span>
+        </div>
+        <div class="fi-tip-card">
+            <MudIcon Icon="@Icons.Material.Filled.ContentPaste" Size="Size.Small" Class="fi-tip-icon" />
+            <span class="fi-tip-text">Paste ingredient lists from a website or type them in manually.</span>
+        </div>
+        <div class="fi-tip-card">
+            <MudIcon Icon="@Icons.Material.Filled.LocalFireDepartment" Size="Size.Small" Class="fi-tip-icon" />
+            <span class="fi-tip-text">Enable Flare Mode in Settings during sensitive periods.</span>
+        </div>
     </MudStack>
 }
 
@@ -408,11 +412,30 @@ else
         currentResult = null;
     }
 
-    private static string GetSafetyCardStyle(SafetyLevel level) => level switch
+    private static string GetSafetyCardClass(SafetyLevel level) => level switch
     {
-        SafetyLevel.Safe => "border-left: 4px solid #22C55E; background: linear-gradient(to right, #F0FDF4, white);",
-        SafetyLevel.Caution => "border-left: 4px solid #F59E0B; background: linear-gradient(to right, #FFFBEB, white);",
-        SafetyLevel.Avoid => "border-left: 4px solid #EF4444; background: linear-gradient(to right, #FEF2F2, white);",
+        SafetyLevel.Safe => "fi-status-safe",
+        SafetyLevel.Caution => "fi-status-caution",
+        SafetyLevel.Avoid => "fi-status-avoid",
+        SafetyLevel.NotFound => "fi-status-notfound",
+        _ => ""
+    };
+
+    private static string GetSafetyIconClass(SafetyLevel level) => level switch
+    {
+        SafetyLevel.Safe => "fi-icon-safe",
+        SafetyLevel.Caution => "fi-icon-caution",
+        SafetyLevel.Avoid => "fi-icon-avoid",
+        SafetyLevel.NotFound => "fi-icon-notfound",
+        _ => ""
+    };
+
+    private static string GetSafetyLabelClass(SafetyLevel level) => level switch
+    {
+        SafetyLevel.Safe => "fi-label-safe",
+        SafetyLevel.Caution => "fi-label-caution",
+        SafetyLevel.Avoid => "fi-label-avoid",
+        SafetyLevel.NotFound => "fi-label-notfound",
         _ => ""
     };
 
@@ -421,6 +444,7 @@ else
         SafetyLevel.Safe => Icons.Material.Filled.CheckCircle,
         SafetyLevel.Caution => Icons.Material.Filled.Warning,
         SafetyLevel.Avoid => Icons.Material.Filled.Dangerous,
+        SafetyLevel.NotFound => Icons.Material.Filled.HelpOutline,
         _ => Icons.Material.Filled.Help
     };
 
@@ -429,6 +453,7 @@ else
         SafetyLevel.Safe => "SAFE",
         SafetyLevel.Caution => "CAUTION",
         SafetyLevel.Avoid => "AVOID",
+        SafetyLevel.NotFound => "NOT FOUND",
         _ => "UNKNOWN"
     };
 

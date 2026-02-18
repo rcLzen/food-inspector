@@ -41,8 +41,8 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         {
             return new AnalysisResult
             {
-                SafetyLevel = SafetyLevel.Safe,
-                Summary = "No ingredients detected.",
+                SafetyLevel = SafetyLevel.NotFound,
+                Summary = "No ingredients provided.",
                 ImpactType = ImpactType.Unknown,
                 ImpactExplanation = "Unknown: no matched trigger had enough evidence to classify symptom vs inflammation risk."
             };
@@ -67,7 +67,9 @@ public class IngredientAnalysisService : IIngredientAnalysisService
         {
             SafetyLevel.Avoid => isFlareMode ? "AVOID - Flare mode escalation active." : "AVOID - High-risk triggers found.",
             SafetyLevel.Caution => "CAUTION - Moderate-risk triggers found.",
-            _ => "SAFE - No mapped triggers found."
+            SafetyLevel.Safe => "SAFE - All ingredients recognized with no triggers found.",
+            SafetyLevel.NotFound => "NOT FOUND - No recognized ingredients matched our database.",
+            _ => "NOT FOUND - No recognized ingredients matched our database."
         };
 
         var timeline = await _timelineService.BuildTimelineAsync(result.DirectMatches.Concat(result.CrossReactiveMatches));

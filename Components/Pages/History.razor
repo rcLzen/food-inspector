@@ -37,8 +37,8 @@
 }
 else if (!history.Any())
 {
-    <MudPaper Class="pa-8" Elevation="0" Style="text-align: center; background: #f5f5f5;">
-        <MudIcon Icon="@Icons.Material.Filled.HistoryToggleOff" Size="Size.Large" Color="Color.Secondary" />
+    <MudPaper Class="pa-8 fi-empty-state" Elevation="0">
+        <MudIcon Icon="@Icons.Material.Filled.HistoryToggleOff" Size="Size.Large" Style="color: var(--fi-text-quaternary);" />
         <MudText Typo="Typo.h6" Class="mt-4">No Scan History Yet</MudText>
         <MudText Typo="Typo.body2" Color="Color.Secondary">Start scanning products to see your history here.</MudText>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
@@ -91,8 +91,19 @@ else
                     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-1">
                         <strong>Ingredients:</strong>
                     </MudText>
-                    <MudText Typo="Typo.body2" Style="@(scan.RawIngredientsText.Length > 200 ? "max-height: 100px; overflow: hidden;" : "")">
-                        @(scan.RawIngredientsText.Length > 200 ? scan.RawIngredientsText.Substring(0, 200) + "..." : scan.RawIngredientsText)
+                    <MudText Typo="Typo.body2" Style="@((scan.RawIngredientsText?.Length ?? 0) > 200 ? "max-height: 100px; overflow: hidden;" : "")">
+                        @if (string.IsNullOrWhiteSpace(scan.RawIngredientsText))
+                        {
+                            <em>No ingredients recorded.</em>
+                        }
+                        else if (scan.RawIngredientsText.Length > 200)
+                        {
+                            @(scan.RawIngredientsText.Substring(0, 200) + "...")
+                        }
+                        else
+                        {
+                            @scan.RawIngredientsText
+                        }
                     </MudText>
 
                     @if (!string.IsNullOrEmpty(scan.AnalysisSummary))
@@ -186,9 +197,10 @@ else
 
     private static string GetCardBorderStyle(SafetyLevel level) => level switch
     {
-        SafetyLevel.Safe => "border-left: 4px solid #22C55E;",
-        SafetyLevel.Caution => "border-left: 4px solid #F59E0B;",
-        SafetyLevel.Avoid => "border-left: 4px solid #EF4444;",
+        SafetyLevel.Safe => "border-left: 4px solid var(--fi-status-safe-border);",
+        SafetyLevel.Caution => "border-left: 4px solid var(--fi-status-caution-border);",
+        SafetyLevel.Avoid => "border-left: 4px solid var(--fi-status-avoid-border);",
+        SafetyLevel.NotFound => "border-left: 4px solid var(--fi-separator);",
         _ => ""
     };
 
@@ -197,6 +209,7 @@ else
         SafetyLevel.Safe => Color.Success,
         SafetyLevel.Caution => Color.Warning,
         SafetyLevel.Avoid => Color.Error,
+        SafetyLevel.NotFound => Color.Default,
         _ => Color.Default
     };
 
@@ -205,6 +218,7 @@ else
         SafetyLevel.Safe => Icons.Material.Filled.CheckCircle,
         SafetyLevel.Caution => Icons.Material.Filled.Warning,
         SafetyLevel.Avoid => Icons.Material.Filled.Dangerous,
+        SafetyLevel.NotFound => Icons.Material.Filled.HelpOutline,
         _ => Icons.Material.Filled.Help
     };
 
@@ -213,6 +227,7 @@ else
         SafetyLevel.Safe => Severity.Success,
         SafetyLevel.Caution => Severity.Warning,
         SafetyLevel.Avoid => Severity.Error,
+        SafetyLevel.NotFound => Severity.Normal,
         _ => Severity.Info
     };
 

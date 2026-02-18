@@ -159,7 +159,7 @@ public class MatchingService : IMatchingService
     {
         if (!severities.Any())
         {
-            return SafetyLevel.Safe;
+            return SafetyLevel.NotFound;
         }
 
         if (severities.Any(x => x == TriggerSeverity.High))

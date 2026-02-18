@@ -1,22 +1,126 @@
-/* Food Inspector - Custom Styles for MudBlazor */
+/* Food Inspector — Apple HIG Semantic Color System */
+/* Emotional calibration: Supportive + Empowering */
 
+/* ?? Design Tokens (Light) ?? */
+:root {
+    --fi-bg-primary: #F4F4F9;
+    --fi-bg-secondary: #FFFFFF;
+    --fi-bg-tertiary: #F9F9FB;
+
+    --fi-surface-card: #FFFFFF;
+    --fi-surface-raised: #FFFFFF;
+    --fi-card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+    --fi-card-shadow-raised: 0 2px 6px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+
+    --fi-separator: #D1D1D6;
+
+    --fi-text-primary: #1C1C1E;
+    --fi-text-secondary: #3A3A3C;
+    --fi-text-tertiary: #6D6D72;
+    --fi-text-quaternary: #8E8E93;
+    --fi-text-on-accent: #FFFFFF;
+    --fi-text-on-status: #FFFFFF;
+
+    --fi-accent-primary: #007AFF;
+    --fi-accent-secondary: #5856D6;
+
+    --fi-status-safe-fill: #34C759;
+    --fi-status-safe-tint: #EAF9EE;
+    --fi-status-safe-border: #BFEBCB;
+    --fi-status-safe-text: #1F7A3A;
+
+    --fi-status-caution-fill: #FF9F0A;
+    --fi-status-caution-tint: #FFF6EC;
+    --fi-status-caution-border: #FFD7A1;
+    --fi-status-caution-text: #8A4B00;
+
+    --fi-status-avoid-fill: #FF3B30;
+    --fi-status-avoid-tint: #FFF0EF;
+    --fi-status-avoid-border: #FFC2BE;
+    --fi-status-avoid-text: #B42318;
+
+    --fi-status-info-fill: #5AC8FA;
+    --fi-status-info-tint: #EEF9FF;
+    --fi-status-info-border: #BDEBFF;
+    --fi-status-info-text: #0B5D7A;
+
+    --fi-state-hover: rgba(0,0,0,0.04);
+    --fi-state-pressed: rgba(0,0,0,0.08);
+    --fi-state-focus-ring: rgba(0,122,255,0.4);
+    --fi-state-disabled-fill: rgba(0,0,0,0.1);
+}
+
+/* ?? Design Tokens (Dark) ?? */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --fi-bg-primary: #000000;
+        --fi-bg-secondary: #1C1C1E;
+        --fi-bg-tertiary: #2C2C2E;
+
+        --fi-surface-card: #1C1C1E;
+        --fi-surface-raised: #2C2C2E;
+        --fi-card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+        --fi-card-shadow-raised: 0 2px 6px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+
+        --fi-separator: #38383A;
+
+        --fi-text-primary: #FFFFFF;
+        --fi-text-secondary: #EBEBF5;
+        --fi-text-tertiary: rgba(235,235,245,0.6);
+        --fi-text-quaternary: rgba(235,235,245,0.3);
+        --fi-text-on-accent: #FFFFFF;
+        --fi-text-on-status: #FFFFFF;
+
+        --fi-accent-primary: #0A84FF;
+        --fi-accent-secondary: #5E5CE6;
+
+        --fi-status-safe-fill: #30D158;
+        --fi-status-safe-tint: #0F2A17;
+        --fi-status-safe-border: #1E4D2A;
+        --fi-status-safe-text: #7DFFB2;
+
+        --fi-status-caution-fill: #FF9F0A;
+        --fi-status-caution-tint: #2B1D0A;
+        --fi-status-caution-border: #5A3A12;
+        --fi-status-caution-text: #FFD19A;
+
+        --fi-status-avoid-fill: #FF453A;
+        --fi-status-avoid-tint: #2A0F10;
+        --fi-status-avoid-border: #5A1E1E;
+        --fi-status-avoid-text: #FFB4AE;
+
+        --fi-status-info-fill: #64D2FF;
+        --fi-status-info-tint: #08232C;
+        --fi-status-info-border: #11424F;
+        --fi-status-info-text: #9DE7FF;
+
+        --fi-state-hover: rgba(255,255,255,0.07);
+        --fi-state-pressed: rgba(255,255,255,0.1);
+        --fi-state-focus-ring: rgba(10,132,255,0.5);
+        --fi-state-disabled-fill: rgba(255,255,255,0.12);
+    }
+}
+
+/* ?? Base ?? */
 html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', 'Segoe UI', sans-serif;
-    background-color: #F9FAFB;
+    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', 'Roboto', sans-serif;
+    background-color: var(--fi-bg-primary);
+    color: var(--fi-text-primary);
+    -webkit-font-smoothing: antialiased;
 }
 
 .status-bar-safe-area {
     padding-top: env(safe-area-inset-top);
-    background-color: #4DA8DA;
+    background-color: var(--fi-accent-primary);
 }
 
 #blazor-error-ui {
-    background: #FEF2F2;
-    border-top: 2px solid #EF4444;
+    background: var(--fi-status-avoid-tint);
+    border-top: 2px solid var(--fi-status-avoid-border);
     bottom: 0;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.06);
     display: none;
     left: 0;
     padding: 0.75rem 1.5rem;
@@ -32,7 +136,7 @@ html, body {
     top: 0.75rem;
 }
 
-/* MudBlazor overrides for mobile-friendly bottom nav */
+/* ?? Bottom navigation ?? */
 .mud-appbar-bottom {
     position: fixed !important;
     bottom: 0 !important;
@@ -40,61 +144,238 @@ html, body {
     right: 0 !important;
 }
 
-/* Safe area for bottom navigation */
 .mud-main-content {
     padding-bottom: 80px !important;
 }
 
-/* Custom scrollbar */
+/* ?? Scrollbar ?? */
 ::-webkit-scrollbar {
     width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--fi-bg-tertiary);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--fi-separator);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+    background: var(--fi-text-quaternary);
 }
 
-/* Animation for cards */
+/* ?? Cards — warm lift ?? */
 .mud-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--fi-card-shadow);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    background: var(--fi-surface-card);
 }
 
-.mud-card:hover {
-    transform: translateY(-2px);
-}
-
-/* Disabled card state */
+/* ?? Disabled card state ?? */
 .mud-card-disabled {
     pointer-events: auto;
 }
 
-/* Custom chip styles */
+/* ?? Chip weight ?? */
 .mud-chip {
     font-weight: 500;
 }
 
-/* Responsive adjustments */
+/* ?? Status Result Panels — emotional calibration ?? */
+.fi-status-safe {
+    background: var(--fi-surface-card);
+    border-left: 4px solid var(--fi-status-safe-fill);
+    box-shadow: var(--fi-card-shadow);
+    animation: fi-result-fadein 0.3s ease-out;
+}
+
+.fi-status-caution {
+    background: var(--fi-surface-card);
+    border-left: 4px solid var(--fi-status-caution-fill);
+    box-shadow: var(--fi-card-shadow);
+    animation: fi-result-fadein 0.25s ease-out;
+}
+
+.fi-status-avoid {
+    background: var(--fi-surface-card);
+    border-left: 4px solid var(--fi-status-avoid-fill);
+    box-shadow: var(--fi-card-shadow);
+    animation: fi-result-popin 0.2s ease-out;
+}
+
+.fi-status-notfound {
+    background: var(--fi-surface-card);
+    border-left: 4px solid var(--fi-separator);
+    box-shadow: var(--fi-card-shadow);
+    animation: fi-result-fadein 0.3s ease-out;
+}
+
+.fi-status-info {
+    background: var(--fi-status-info-tint);
+    border-left: 4px solid var(--fi-status-info-border);
+    color: var(--fi-status-info-text);
+}
+
+/* Status icon colors */
+.fi-icon-safe { color: var(--fi-status-safe-fill); }
+.fi-icon-caution { color: var(--fi-status-caution-fill); }
+.fi-icon-avoid { color: var(--fi-status-avoid-fill); }
+.fi-icon-notfound { color: var(--fi-text-quaternary); }
+
+/* Status result label colors */
+.fi-label-safe { color: var(--fi-status-safe-text); }
+.fi-label-caution { color: var(--fi-status-caution-text); }
+.fi-label-avoid { color: var(--fi-status-avoid-text); }
+.fi-label-notfound { color: var(--fi-text-tertiary); }
+
+/* ?? Result animations ?? */
+@keyframes fi-result-fadein {
+    from { opacity: 0; transform: translateY(6px) scale(0.99); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fi-result-popin {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ?? Status indicator tiles (Settings How It Works) ?? */
+.fi-status-tile-safe {
+    background: var(--fi-status-safe-tint);
+    border-left: 4px solid var(--fi-status-safe-border);
+    color: var(--fi-status-safe-text);
+}
+
+.fi-status-tile-caution {
+    background: var(--fi-status-caution-tint);
+    border-left: 4px solid var(--fi-status-caution-border);
+    color: var(--fi-status-caution-text);
+}
+
+.fi-status-tile-avoid {
+    background: var(--fi-status-avoid-tint);
+    border-left: 4px solid var(--fi-status-avoid-border);
+    color: var(--fi-status-avoid-text);
+}
+
+/* ?? Stat cards (Cross-reactivity) — white card + colored number ?? */
+.fi-stat-card {
+    text-align: center;
+    padding: 16px 12px;
+    border-radius: 12px;
+    background: var(--fi-surface-card);
+    box-shadow: var(--fi-card-shadow);
+}
+
+.fi-stat-card--primary { color: var(--fi-accent-primary); }
+.fi-stat-card--safe { color: var(--fi-status-safe-fill); }
+.fi-stat-card--avoid { color: var(--fi-status-avoid-fill); }
+.fi-stat-card--info { color: var(--fi-accent-secondary); }
+
+.fi-stat-card .fi-stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.fi-stat-card .fi-stat-label {
+    font-size: 0.75rem;
+    color: var(--fi-text-tertiary);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* ?? Primary CTA — empowered button ?? */
+.fi-cta-primary {
+    background: linear-gradient(180deg, #1A8CFF 0%, #0070E0 100%) !important;
+    box-shadow: 0 2px 8px rgba(0,122,255,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    letter-spacing: 0.3px;
+    font-weight: 600 !important;
+}
+
+.fi-cta-primary:hover {
+    box-shadow: 0 4px 14px rgba(0,122,255,0.3);
+    transform: translateY(-1px);
+}
+
+.fi-cta-primary:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(0,122,255,0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+    .fi-cta-primary {
+        background: linear-gradient(180deg, #1C91FF 0%, #0A84FF 100%) !important;
+        box-shadow: 0 2px 8px rgba(10,132,255,0.3);
+    }
+}
+
+/* ?? Quick Tip cards ?? */
+.fi-tip-card {
+    background: var(--fi-surface-card);
+    box-shadow: var(--fi-card-shadow);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.fi-tip-card .fi-tip-icon {
+    color: var(--fi-accent-primary);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.fi-tip-card .fi-tip-text {
+    color: var(--fi-text-primary);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+/* ?? Empty state ?? */
+.fi-empty-state {
+    text-align: center;
+    background: var(--fi-surface-card);
+    border-radius: 12px;
+    box-shadow: var(--fi-card-shadow);
+}
+
+/* ?? Interaction states ?? */
+.mud-button-filled-primary {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mud-button:not(:disabled):active {
+    transform: scale(0.98);
+}
+
+.mud-button:focus-visible {
+    outline: 3px solid var(--fi-state-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toggle switch transition */
+.mud-switch {
+    transition: background-color 0.2s ease;
+}
+
+/* ?? Responsive ?? */
 @media (max-width: 600px) {
     .mud-appbar .mud-typography-h6 {
         font-size: 1rem;
     }
-    
+
     .mud-main-content {
         padding: 8px !important;
         padding-bottom: 80px !important;
     }
 }
 
-/* Loading animation enhancement */
+/* ?? Loading animation ?? */
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }

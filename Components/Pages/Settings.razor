@@ -108,31 +108,31 @@
         </MudCardHeader>
         <MudCardContent>
             <MudStack Spacing="3">
-                <MudPaper Class="pa-3" Elevation="0" Style="background: #F0FDF4; border-left: 4px solid #22C55E;">
+                <MudPaper Class="pa-3 fi-status-tile-safe" Elevation="0" Style="border-radius: 10px;">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Class="fi-icon-safe" />
                         <MudStack Spacing="0">
-                            <MudText Typo="Typo.subtitle2" Color="Color.Success">SAFE</MudText>
+                            <MudText Typo="Typo.subtitle2" Style="color: var(--fi-status-safe-text); font-weight: 600;">SAFE</MudText>
                             <MudText Typo="Typo.body2">No known triggers detected</MudText>
                         </MudStack>
                     </MudStack>
                 </MudPaper>
 
-                <MudPaper Class="pa-3" Elevation="0" Style="background: #FFFBEB; border-left: 4px solid #F59E0B;">
+                <MudPaper Class="pa-3 fi-status-tile-caution" Elevation="0" Style="border-radius: 10px;">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                        <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" />
+                        <MudIcon Icon="@Icons.Material.Filled.Warning" Class="fi-icon-caution" />
                         <MudStack Spacing="0">
-                            <MudText Typo="Typo.subtitle2" Style="color: #D97706;">CAUTION</MudText>
+                            <MudText Typo="Typo.subtitle2" Style="color: var(--fi-status-caution-text); font-weight: 600;">CAUTION</MudText>
                             <MudText Typo="Typo.body2">Minor triggers or sensitivities detected</MudText>
                         </MudStack>
                     </MudStack>
                 </MudPaper>
 
-                <MudPaper Class="pa-3" Elevation="0" Style="background: #FEF2F2; border-left: 4px solid #EF4444;">
+                <MudPaper Class="pa-3 fi-status-tile-avoid" Elevation="0" Style="border-radius: 10px;">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                        <MudIcon Icon="@Icons.Material.Filled.Dangerous" Color="Color.Error" />
+                        <MudIcon Icon="@Icons.Material.Filled.Dangerous" Class="fi-icon-avoid" />
                         <MudStack Spacing="0">
-                            <MudText Typo="Typo.subtitle2" Color="Color.Error">AVOID</MudText>
+                            <MudText Typo="Typo.subtitle2" Style="color: var(--fi-status-avoid-text); font-weight: 600;">AVOID</MudText>
                             <MudText Typo="Typo.body2">Major allergens or high-severity triggers detected</MudText>
                         </MudStack>
                     </MudStack>

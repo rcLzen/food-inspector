@@ -12,27 +12,27 @@
 <!-- Statistics Cards -->
 <MudGrid Spacing="2" Class="mb-4">
     <MudItem xs="6" sm="3">
-        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #4DA8DA 0%, #87CEEB 100%); color: white;">
-            <MudText Typo="Typo.h4">@rules.Count</MudText>
-            <MudText Typo="Typo.caption">Total Rules</MudText>
+        <MudPaper Class="fi-stat-card fi-stat-card--primary" Elevation="0">
+            <div class="fi-stat-value">@rules.Count</div>
+            <div class="fi-stat-label">Total Rules</div>
         </MudPaper>
     </MudItem>
     <MudItem xs="6" sm="3">
-        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #10B981 0%, #6EE7B7 100%); color: white;">
-            <MudText Typo="Typo.h4">@rules.Count(r => r.Enabled)</MudText>
-            <MudText Typo="Typo.caption">Active</MudText>
+        <MudPaper Class="fi-stat-card fi-stat-card--safe" Elevation="0">
+            <div class="fi-stat-value">@rules.Count(r => r.Enabled)</div>
+            <div class="fi-stat-label">Active</div>
         </MudPaper>
     </MudItem>
     <MudItem xs="6" sm="3">
-        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #EF4444 0%, #FCA5A5 100%); color: white;">
-            <MudText Typo="Typo.h4">@rules.Count(r => r.Strength == CrossReactivityStrength.High)</MudText>
-            <MudText Typo="Typo.caption">High Risk</MudText>
+        <MudPaper Class="fi-stat-card fi-stat-card--avoid" Elevation="0">
+            <div class="fi-stat-value">@rules.Count(r => r.Strength == CrossReactivityStrength.High)</div>
+            <div class="fi-stat-label">High Risk</div>
         </MudPaper>
     </MudItem>
     <MudItem xs="6" sm="3">
-        <MudPaper Class="pa-3" Elevation="2" Style="text-align: center; background: linear-gradient(135deg, #3B82F6 0%, #93C5FD 100%); color: white;">
-            <MudText Typo="Typo.h4">@evidenceSources.Count</MudText>
-            <MudText Typo="Typo.caption">Citations</MudText>
+        <MudPaper Class="fi-stat-card fi-stat-card--info" Elevation="0">
+            <div class="fi-stat-value">@evidenceSources.Count</div>
+            <div class="fi-stat-label">Citations</div>
         </MudPaper>
     </MudItem>
 </MudGrid>

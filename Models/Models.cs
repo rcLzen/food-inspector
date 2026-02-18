@@ -4,7 +4,8 @@ public enum SafetyLevel
 {
     Safe,
     Caution,
-    Avoid
+    Avoid,
+    NotFound
 }
 
 public enum TriggerSeverity

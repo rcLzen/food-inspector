@@ -6,17 +6,17 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Color="Color.Primary" Fixed="true">
-        <MudIcon Icon="@Icons.Material.Filled.FoodBank" Class="mr-2" />
-        <MudText Typo="Typo.h6">Food Inspector</MudText>
+    <MudAppBar Elevation="0" Fixed="true" Style="background: var(--fi-surface-card); color: var(--fi-text-primary); border-bottom: 1px solid var(--fi-separator); box-shadow: 0 1px 6px rgba(0,0,0,0.03);">
+        <MudIcon Icon="@Icons.Material.Filled.FoodBank" Class="mr-2" Style="color: var(--fi-accent-primary);" />
+        <MudText Typo="Typo.h6" Style="font-weight: 600;">Food Inspector</MudText>
         <MudSpacer />
     </MudAppBar>
 
-    <MudMainContent Class="pa-4" Style="padding-top: 80px !important; padding-bottom: 80px !important;">
+    <MudMainContent Class="pa-4" Style="padding-top: 80px !important; padding-bottom: 80px !important; background: var(--fi-bg-primary);">
         @Body
     </MudMainContent>
 
-    <MudAppBar Bottom="true" Elevation="2" Color="Color.Surface" Fixed="true" Style="height: 64px;">
+    <MudAppBar Bottom="true" Elevation="0" Fixed="true" Style="height: 64px; background: var(--fi-surface-card); border-top: 1px solid var(--fi-separator); box-shadow: 0 -1px 6px rgba(0,0,0,0.04);">
         <MudGrid Spacing="0" Justify="Justify.SpaceAround" Style="width: 100%;">
             <MudItem>
                 <NavLink href="/" Match="NavLinkMatch.All" class="nav-link-item">
@@ -59,33 +59,36 @@
     {
         PaletteLight = new PaletteLight
         {
-            Primary = "#4DA8DA",
-            PrimaryDarken = "#2E86AB",
-            PrimaryLighten = "#87CEEB",
-            Secondary = "#10B981",
-            Tertiary = "#F59E0B",
-            Info = "#60A5FA",
-            Success = "#22C55E",
-            Warning = "#F59E0B",
-            Error = "#EF4444",
-            AppbarBackground = "#4DA8DA",
-            AppbarText = "#FFFFFF",
-            Background = "#F0F7FA",
+            Primary = "#007AFF",
+            PrimaryDarken = "#0056B3",
+            PrimaryLighten = "#4DA3FF",
+            Secondary = "#5856D6",
+            Tertiary = "#FF9F0A",
+            Info = "#5AC8FA",
+            Success = "#34C759",
+            Warning = "#FF9F0A",
+            Error = "#FF3B30",
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#1C1C1E",
+            Background = "#F4F4F9",
             Surface = "#FFFFFF",
             DrawerBackground = "#FFFFFF",
-            TextPrimary = "#1E3A4F",
-            TextSecondary = "#5A7D8C"
+            TextPrimary = "#1C1C1E",
+            TextSecondary = "#3A3A3C",
+            TextDisabled = "#8E8E93",
+            Divider = "#D1D1D6",
+            DividerLight = "#E5E5EA"
         },
         Typography = new Typography
         {
             Default = new Default
             {
-                FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" }
+                FontFamily = new[] { "-apple-system", "SF Pro Text", "Helvetica Neue", "Roboto", "sans-serif" }
             }
         },
         LayoutProperties = new LayoutProperties
         {
-            DefaultBorderRadius = "8px"
+            DefaultBorderRadius = "10px"
         }
     };
 }
@@ -93,19 +96,28 @@
 <style>
     .nav-link-item {
         text-decoration: none;
-        color: var(--mud-palette-text-secondary);
+        color: var(--fi-text-quaternary);
         padding: 8px 16px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        transition: color 0.2s;
+        transition: color 0.15s ease;
     }
 
     .nav-link-item:hover {
-        color: var(--mud-palette-primary);
+        color: var(--fi-text-secondary);
     }
 
     .nav-link-item.active {
-        color: var(--mud-palette-primary);
+        color: var(--fi-accent-primary);
+    }
+
+    /* Subtle section personality via active accent */
+    .nav-link-item[href='/cross-reactivity'].active {
+        color: var(--fi-accent-secondary);
+    }
+
+    .nav-link-item[href='/settings'].active {
+        color: var(--fi-text-secondary);
     }
 </style>
