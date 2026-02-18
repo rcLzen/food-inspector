@@ -10,6 +10,7 @@ public interface IDatabaseService
     Task<ScanRecord> SaveScanHistoryAsync(ScanRecord scan);
     Task<List<Models.Trigger>> GetAllTriggersAsync();
     Task<List<TriggerSynonym>> GetAllSynonymsAsync();
+    Task<List<EvidenceTimingProfile>> GetEvidenceTimingProfilesAsync();
     Task<List<CrossReactivityRule>> GetCrossReactivityRulesAsync();
     Task<AppSettings> GetSettingsAsync();
     Task<AppSettings> SaveSettingsAsync(AppSettings settings);
@@ -75,6 +76,15 @@ public class DatabaseService : IDatabaseService
     {
         return await _context.TriggerSynonyms
             .Include(s => s.Trigger)
+            .ToListAsync();
+    }
+
+    public async Task<List<EvidenceTimingProfile>> GetEvidenceTimingProfilesAsync()
+    {
+        return await _context.EvidenceTimingProfiles
+            .Include(x => x.Trigger)
+            .Include(x => x.EvidenceSource)
+            .Where(x => x.Enabled)
             .ToListAsync();
     }
 

@@ -63,6 +63,22 @@ public class EvidenceSource
     public string ScopeTag { get; set; } = string.Empty;
 }
 
+public class EvidenceTimingProfile
+{
+    public int Id { get; set; }
+    public int? TriggerId { get; set; }
+    public string? TriggerCategory { get; set; }
+    public bool Acute { get; set; }
+    public bool Subacute { get; set; }
+    public bool Chronic { get; set; }
+    public string Why { get; set; } = string.Empty;
+    public int EvidenceSourceId { get; set; }
+    public bool Enabled { get; set; } = true;
+
+    public Trigger? Trigger { get; set; }
+    public EvidenceSource? EvidenceSource { get; set; }
+}
+
 public class CrossReactivityRule
 {
     public int Id { get; set; }

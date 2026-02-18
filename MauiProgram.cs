@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IOcrService, OcrService>();
         builder.Services.AddSingleton<IIngredientNormalizationService, IngredientNormalizationService>();
         builder.Services.AddSingleton<IMatchingService, MatchingService>();
+        builder.Services.AddSingleton<IInflammationTimelineService, InflammationTimelineService>();
         builder.Services.AddSingleton<IIngredientAnalysisService, IngredientAnalysisService>();
         builder.Services.AddSingleton<IExportService, ExportService>();
         builder.Services.AddSingleton<ISettingsService, SettingsService>();

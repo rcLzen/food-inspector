@@ -58,6 +58,35 @@ else if (currentResult != null)
         </MudCardHeader>
         <MudCardContent>
             <MudText Typo="Typo.body1" Class="mb-4">@currentResult.Summary</MudText>
+            <MudPaper Outlined="true" Class="pa-3 mb-4">
+                <MudText Typo="Typo.subtitle2" Class="mb-2"><strong>Inflammation Timeline</strong></MudText>
+                <MudStack Row="true" Spacing="1" Class="mb-2" Style="flex-wrap: wrap;">
+                    <MudChip T="string" Color="@GetTimelineBadgeColor(currentResult.TimelineFlags.Acute)" Variant="Variant.Filled">
+                        Acute (0–24h)
+                    </MudChip>
+                    <MudChip T="string" Color="@GetTimelineBadgeColor(currentResult.TimelineFlags.Subacute)" Variant="Variant.Filled">
+                        Subacute (1–7 days)
+                    </MudChip>
+                    <MudChip T="string" Color="@GetTimelineBadgeColor(currentResult.TimelineFlags.Chronic)" Variant="Variant.Filled">
+                        Chronic/Cumulative (weeks+)
+                    </MudChip>
+                </MudStack>
+                @if (currentResult.TimelineBuckets.Any(x => x.IsApplicable))
+                {
+                    @foreach (var bucket in currentResult.TimelineBuckets.Where(x => x.IsApplicable))
+                    {
+                        <MudText Typo="Typo.body2"><strong>@bucket.Label:</strong> @bucket.Why</MudText>
+                        @if (bucket.EvidenceCitations.Any())
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">Evidence: @string.Join("; ", bucket.EvidenceCitations)</MudText>
+                        }
+                    }
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">No evidence-linked timing profile matched this result.</MudText>
+                }
+            </MudPaper>
 
             <MudExpansionPanels MultiExpansion="true">
                 <MudExpansionPanel Text="@($"Direct Matches ({currentResult.DirectMatches.Count()})")" 
@@ -220,7 +249,7 @@ else
         if (BarcodeScanner.IsNativeScanSupported)
         {
             // Native camera scan on Android/iOS
-            // Don't show loading spinner � the native modal page covers the screen
+            // Don't show loading spinner � the native modal page covers the screen
             barcode = await BarcodeScanner.ScanBarcodeAsync();
 
             if (string.IsNullOrEmpty(barcode))
@@ -393,6 +422,8 @@ else
         "Low" => Color.Success,
         _ => Color.Default
     };
+
+    private static Color GetTimelineBadgeColor(bool highlighted) => highlighted ? Color.Primary : Color.Default;
 
     private bool directMatchesExpanded = true;
 }
