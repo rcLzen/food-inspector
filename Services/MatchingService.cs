@@ -7,6 +7,7 @@ public class MatchDetail
 {
     public int TriggerId { get; set; }
     public string TriggerName { get; set; } = string.Empty;
+    public string? TriggerCategory { get; set; }
     public string MatchedText { get; set; } = string.Empty;
     public ScanMatchReason Reason { get; set; }
     public TriggerSeverity Severity { get; set; }
@@ -61,6 +62,7 @@ public class MatchingService : IMatchingService
                 {
                     TriggerId = trigger.Id,
                     TriggerName = trigger.Name,
+                    TriggerCategory = trigger.Category,
                     MatchedText = trigger.Name,
                     Reason = ScanMatchReason.Direct,
                     Severity = trigger.Severity
@@ -82,6 +84,7 @@ public class MatchingService : IMatchingService
                 {
                     TriggerId = synonym.TriggerId,
                     TriggerName = synonym.Trigger!.Name,
+                    TriggerCategory = synonym.Trigger.Category,
                     MatchedText = matched,
                     Reason = ScanMatchReason.Synonym,
                     Severity = synonym.Trigger.Severity
@@ -121,6 +124,7 @@ public class MatchingService : IMatchingService
                 {
                     TriggerId = target.Id,
                     TriggerName = target.Name,
+                    TriggerCategory = target.Category,
                     MatchedText = target.Name,
                     Reason = ScanMatchReason.CrossReact,
                     Severity = target.Severity,

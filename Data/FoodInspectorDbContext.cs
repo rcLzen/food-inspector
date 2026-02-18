@@ -9,6 +9,7 @@ public class FoodInspectorDbContext : DbContext
     public DbSet<Models.Trigger> Triggers { get; set; }
     public DbSet<TriggerSynonym> TriggerSynonyms { get; set; }
     public DbSet<EvidenceSource> EvidenceSources { get; set; }
+    public DbSet<EvidenceTimingProfile> EvidenceTimingProfiles { get; set; }
     public DbSet<CrossReactivityRule> CrossReactivityRules { get; set; }
     public DbSet<ScanRecord> ScanRecords { get; set; }
     public DbSet<ScanMatch> ScanMatches { get; set; }
@@ -46,6 +47,18 @@ public class FoodInspectorDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<CrossReactivityRule>()
+            .HasOne(x => x.EvidenceSource)
+            .WithMany()
+            .HasForeignKey(x => x.EvidenceSourceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EvidenceTimingProfile>()
+            .HasOne(x => x.Trigger)
+            .WithMany()
+            .HasForeignKey(x => x.TriggerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EvidenceTimingProfile>()
             .HasOne(x => x.EvidenceSource)
             .WithMany()
             .HasForeignKey(x => x.EvidenceSourceId)
@@ -580,6 +593,63 @@ public class FoodInspectorDbContext : DbContext
                 Url = "https://pubmed.ncbi.nlm.nih.gov/12464954/",
                 Summary = "Discusses peanut-lupine cross-reactivity and threshold doses for allergic reactions.",
                 ScopeTag = "Peanut-lupine"
+            });
+
+        modelBuilder.Entity<EvidenceTimingProfile>().HasData(
+            new EvidenceTimingProfile
+            {
+                Id = 1,
+                TriggerCategory = "Cereal",
+                Acute = true,
+                Subacute = true,
+                Chronic = true,
+                Why = "Gluten-containing grains can trigger immediate symptoms and sustained inflammatory activity in sensitive individuals.",
+                EvidenceSourceId = 3,
+                Enabled = true
+            },
+            new EvidenceTimingProfile
+            {
+                Id = 2,
+                TriggerCategory = "Dairy",
+                Acute = true,
+                Subacute = true,
+                Chronic = true,
+                Why = "Dairy protein reactivity can appear rapidly after exposure and may persist with repeated intake.",
+                EvidenceSourceId = 11,
+                Enabled = true
+            },
+            new EvidenceTimingProfile
+            {
+                Id = 3,
+                TriggerCategory = "Legume",
+                Acute = true,
+                Subacute = true,
+                Chronic = true,
+                Why = "Legume allergens may provoke immediate immune responses and cumulative inflammation with recurrent exposure.",
+                EvidenceSourceId = 2,
+                Enabled = true
+            },
+            new EvidenceTimingProfile
+            {
+                Id = 4,
+                TriggerCategory = "Fungi/Yeast",
+                Acute = true,
+                Subacute = true,
+                Chronic = true,
+                Why = "Fungi and yeast-related food sensitivity can involve immediate and prolonged inflammatory signaling.",
+                EvidenceSourceId = 4,
+                Enabled = true
+            },
+            new EvidenceTimingProfile
+            {
+                Id = 5,
+                TriggerCategory = "Additive",
+                Acute = true,
+                Subacute = true,
+                Chronic = true,
+                Why = "Additives can trigger immediate intolerance symptoms and may contribute to cumulative inflammatory burden.",
+                EvidenceSourceId = 1,
+                Enabled = true
             });
 
         // ============================================

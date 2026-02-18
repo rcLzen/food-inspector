@@ -15,15 +15,21 @@ public class AnalysisResult
     public string Summary { get; set; } = string.Empty;
     public List<MatchDetail> DirectMatches { get; set; } = new();
     public List<MatchDetail> CrossReactiveMatches { get; set; } = new();
+    public TimelineFlags TimelineFlags { get; set; } = new();
+    public string TimelineExplanation { get; set; } = string.Empty;
+    public List<string> TimelineEvidenceReferences { get; set; } = new();
+    public List<TimelineBucketDetail> TimelineBuckets { get; set; } = new();
 }
 
 public class IngredientAnalysisService : IIngredientAnalysisService
 {
     private readonly IMatchingService _matchingService;
+    private readonly IInflammationTimelineService _timelineService;
 
-    public IngredientAnalysisService(IMatchingService matchingService)
+    public IngredientAnalysisService(IMatchingService matchingService, IInflammationTimelineService timelineService)
     {
         _matchingService = matchingService;
+        _timelineService = timelineService;
     }
 
     public async Task<AnalysisResult> AnalyzeIngredientsAsync(string ingredients, bool isFlareMode, int flareModeThreshold)
@@ -58,6 +64,12 @@ public class IngredientAnalysisService : IIngredientAnalysisService
             SafetyLevel.Caution => "CAUTION - Moderate-risk triggers found.",
             _ => "SAFE - No mapped triggers found."
         };
+
+        var timeline = await _timelineService.BuildTimelineAsync(result.DirectMatches.Concat(result.CrossReactiveMatches));
+        result.TimelineFlags = timeline.Flags;
+        result.TimelineExplanation = timeline.Explanation;
+        result.TimelineEvidenceReferences = timeline.EvidenceReferences;
+        result.TimelineBuckets = timeline.Buckets;
 
         return result;
     }
