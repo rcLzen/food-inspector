@@ -101,6 +101,14 @@ else
                             @scan.AnalysisSummary
                         </MudAlert>
                     }
+
+                    <MudAlert Severity="@GetImpactAlertSeverity(scan.ImpactType)" Dense="true" Class="mt-2" NoIcon="true">
+                        <MudText Typo="Typo.body2"><strong>@GetImpactLabel(scan.ImpactType):</strong> @GetImpactExplanation(scan)</MudText>
+                        @if (!string.IsNullOrWhiteSpace(scan.ImpactCitationShort))
+                        {
+                            <MudText Typo="Typo.caption">Evidence: @scan.ImpactCitationShort</MudText>
+                        }
+                    </MudAlert>
                 </MudCardContent>
                 <MudCardActions>
                     <MudSpacer />
@@ -207,4 +215,23 @@ else
         SafetyLevel.Avoid => Severity.Error,
         _ => Severity.Info
     };
+
+    private static string GetImpactLabel(ImpactType impactType) => impactType switch
+    {
+        ImpactType.SymptomLikely => "Likely symptom trigger",
+        ImpactType.InflammationLikely => "Possible inflammatory trigger",
+        _ => "Unknown"
+    };
+
+    private static Severity GetImpactAlertSeverity(ImpactType impactType) => impactType switch
+    {
+        ImpactType.SymptomLikely => Severity.Info,
+        ImpactType.InflammationLikely => Severity.Warning,
+        _ => Severity.Normal
+    };
+
+    private static string GetImpactExplanation(ScanRecord scan) =>
+        string.IsNullOrWhiteSpace(scan.ImpactExplanation)
+            ? "Unknown: this older record does not include symptom vs inflammation details."
+            : scan.ImpactExplanation;
 }

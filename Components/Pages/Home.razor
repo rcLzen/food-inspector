@@ -58,6 +58,20 @@ else if (currentResult != null)
         </MudCardHeader>
         <MudCardContent>
             <MudText Typo="Typo.body1" Class="mb-4">@currentResult.Summary</MudText>
+            <MudSwitch @bind-Value="showImpactInsights"
+                       Color="Color.Primary"
+                       Label="Show symptom vs inflammation insights"
+                       Class="mb-2" />
+            @if (showImpactInsights)
+            {
+                <MudAlert Severity="@GetImpactAlertSeverity(currentResult.ImpactType)" Dense="true" Class="mb-4">
+                    <MudText Typo="Typo.body2"><strong>@GetImpactLabel(currentResult.ImpactType):</strong> @currentResult.ImpactExplanation</MudText>
+                    @if (!string.IsNullOrWhiteSpace(currentResult.ImpactCitationShort))
+                    {
+                        <MudText Typo="Typo.caption">Evidence: @currentResult.ImpactCitationShort</MudText>
+                    }
+                </MudAlert>
+            }
             <MudPaper Outlined="true" Class="pa-3 mb-4">
                 <MudText Typo="Typo.subtitle2" Class="mb-2"><strong>Inflammation Timeline</strong></MudText>
                 <MudStack Row="true" Spacing="1" Class="mb-2" Style="flex-wrap: wrap;">
@@ -366,6 +380,9 @@ else
             FinalStatus = currentResult.SafetyLevel,
             FlareModeOn = isFlareMode,
             AnalysisSummary = currentResult.Summary,
+            ImpactType = currentResult.ImpactType,
+            ImpactExplanation = currentResult.ImpactExplanation,
+            ImpactCitationShort = currentResult.ImpactCitationShort,
             Matches = currentResult.DirectMatches
                 .Concat(currentResult.CrossReactiveMatches)
                 .Select(x => new ScanMatch
@@ -424,6 +441,20 @@ else
     };
 
     private static Color GetTimelineBadgeColor(bool highlighted) => highlighted ? Color.Primary : Color.Default;
+    private static string GetImpactLabel(ImpactType impactType) => impactType switch
+    {
+        ImpactType.SymptomLikely => "Likely symptom trigger",
+        ImpactType.InflammationLikely => "Possible inflammatory trigger",
+        _ => "Unknown"
+    };
+
+    private static Severity GetImpactAlertSeverity(ImpactType impactType) => impactType switch
+    {
+        ImpactType.SymptomLikely => Severity.Info,
+        ImpactType.InflammationLikely => Severity.Warning,
+        _ => Severity.Normal
+    };
 
     private bool directMatchesExpanded = true;
+    private bool showImpactInsights = true;
 }
