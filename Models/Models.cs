@@ -35,6 +35,13 @@ public enum ScanMatchReason
     CrossReact
 }
 
+public enum ImpactType
+{
+    SymptomLikely,
+    InflammationLikely,
+    Unknown
+}
+
 public class Trigger
 {
     public int Id { get; set; }
@@ -106,6 +113,9 @@ public class ScanRecord
     public SafetyLevel FinalStatus { get; set; }
     public bool FlareModeOn { get; set; }
     public string AnalysisSummary { get; set; } = string.Empty;
+    public ImpactType ImpactType { get; set; } = ImpactType.Unknown;
+    public string ImpactExplanation { get; set; } = string.Empty;
+    public string? ImpactCitationShort { get; set; }
     public List<ScanMatch> Matches { get; set; } = new();
 }
 
