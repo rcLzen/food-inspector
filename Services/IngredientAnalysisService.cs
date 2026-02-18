@@ -100,8 +100,11 @@ public class IngredientAnalysisService : IIngredientAnalysisService
             string.Equals(x.TriggerCategory, "Egg", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(x.TriggerCategory, "Seafood", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(x.TriggerCategory, "Other", StringComparison.OrdinalIgnoreCase));
+        var hasHighSeverityNonLactose = matches.Any(x =>
+            x.Severity == TriggerSeverity.High &&
+            !string.Equals(x.TriggerName, "Lactose", StringComparison.OrdinalIgnoreCase));
 
-        if (hasCrossReactiveEvidence || hasImmuneCategory || matches.Any(x => x.Severity == TriggerSeverity.High && !string.Equals(x.TriggerName, "Lactose", StringComparison.OrdinalIgnoreCase)))
+        if (hasCrossReactiveEvidence || hasImmuneCategory || hasHighSeverityNonLactose)
         {
             var citation = result.CrossReactiveMatches.Select(x => x.EvidenceCitationShort)
                 .Concat(result.TimelineEvidenceReferences)
